@@ -10,8 +10,9 @@ const Home = () => {
     <Row>
       <Col span={1}><Tool /></Col>
       <Col span={6}><SideBar/> </Col>
-      <Col span={11}><ChatWindow/> </Col>
-      <Col span={6}><Information /></Col>
+      {/* <Col span={12}><ChatWindow/> </Col>
+      <Col span={5}><Information /></Col> */}
+       <Col span={17}></Col>
     </Row>
   )
 }

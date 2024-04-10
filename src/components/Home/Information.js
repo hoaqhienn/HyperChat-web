@@ -7,10 +7,10 @@ import { AiOutlineUsergroupAdd } from 'react-icons/ai'
 export default function Information() {
   return (
     <div >
-      <div style={{width:384,height:60,borderBottom:'1px solid #CCCCCC',display:'flex',justifyContent:'center',alignItems:'center'}}>
+      <div style={{width:'100%',height:60,borderBottom:'1px solid #CCCCCC',display:'flex',justifyContent:'center',alignItems:'center'}}>
         <h3>Thông Tin Hội Thoại</h3>
       </div>
-      <div style={{width:384,height:635,display:'flex',flexDirection:'column',alignItems:'center',overflowY: 'scroll',overflowX:'visible'}}>
+      <div style={{width:'100%',height:635,display:'flex',flexDirection:'column',alignItems:'center',overflowY: 'scroll',overflowX:'visible'}}>
         <Avatar style={{marginTop:20,width:60,height:60,border: '2px solid white'}} src={require('./image/avt.jpg')} />
         <div style={{marginTop:10,display:'flex',flexDirection:'row' }}>
           <h3 style={{marginTop:4,marginLeft:30}}>Thịnh Nè</h3>
@@ -24,11 +24,11 @@ export default function Information() {
           <div style={{backgroundColor:'silver',borderRadius:50,width:40,height:40,alignItems:'center',justifyContent:'center',display:'flex'}}>
             <AiOutlineUsergroupAdd style={{fontSize:25}}/></div>
         </div>
-        <div style={{width:350,marginTop:20}}>
+        <div style={{width:'100%',marginTop:20}}>
           <h3>Hình Ảnh</h3>
         </div>
 
-        <div style={{width:375,marginTop:20,display:'flex',flexDirection:'row',overflowY: 'visible',overflowX:'scroll'}}>
+        <div style={{width:'100%',marginTop:20,display:'flex',flexDirection:'row',overflowY: 'visible',overflowX:'scroll'}}>
 
           <img src={require('./image/avt.jpg')} style={{marginRight:10,width:120,height:120}}/>
           <img src={require('./image/avt.jpg')} style={{marginRight:10,width:120,height:120}}/>
@@ -37,7 +37,7 @@ export default function Information() {
           <img src={require('./image/avt.jpg')} style={{marginRight:10,width:120,height:120}}/>
           <img src={require('./image/avt.jpg')} style={{marginRight:10,width:120,height:120}}/>
           </div>
-          <div style={{width:350,marginTop:20}}>
+          <div style={{width:'100%',marginTop:20}}>
           <h3>File</h3>
         </div>
       </div>
