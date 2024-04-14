@@ -14,8 +14,8 @@ const Login = () => {
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
 
-    const [account, setAccount] = useState('noname002');
-    const [password, setPassword] = useState('Tuan@123');
+    const [account, setAccount] = useState('0942694947');
+    const [password, setPassword] = useState('Thinhnguyen2002@');
     const [passwordShown, setPasswordShown] = useState(false);
 
     const [error, setError] = useState(''); // State to store the error message
@@ -50,7 +50,6 @@ const Login = () => {
             localStorage.setItem('userToken', response.data.token); // Lưu token
             localStorage.setItem('userId', response.data._id);
             console.log('Login successful:', response.data);
-
             dispatch(loginUserSuccess(response.data)); // Dispatch the login success action
 
             navigate('/chatwithfriend'); // Redirect to home page on successful login

@@ -174,6 +174,7 @@ export default function ChatWindow() {
       formData.append("messageText", messageText);
       formData.append("sender", userId);
       formData.append("chatPrivateId", roomInfo._id);
+      formData.append("chatGroupId", roomInfo._id);
       formData.append("files", files);
       const response = await axios.post(
         "http://localhost:5000/api/message/sendMessage",

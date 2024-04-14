@@ -3,7 +3,8 @@ const SERVER_IP = 'localhost';
 // http://192.168.217.1:3000
 const SERVER_PORT = '5000';
 const API_BASE_URL = `http://${SERVER_IP}:${SERVER_PORT}/api/`;
-const SOCKET_URL = `http://192.168.217.1:3000`;
+//192.168.1.232
+const SOCKET_URL = `http://192.168.1.232:3000`;
 
 const API_CONFIG = {
   baseURL: API_BASE_URL,
@@ -22,6 +23,7 @@ const API_CONFIG = {
     verifyOTPForgotPwd: 'user/verifyOTPForgotPassword',
     changePassword: 'user/changePassword',
     getRequests: 'friends/getAllSendFriendRequest',
+    getListFriends:'user/listFriends'
   },
 };
 

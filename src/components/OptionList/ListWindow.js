@@ -3,49 +3,51 @@ import axios from 'axios';
 import { Avatar, List, notification ,Button} from 'antd';
 import {useSelector} from 'react-redux';
 import {getRequests, getData} from '../../api/allUser';
+
 const ListWindow = () => {
- 
+  // Lấy danh sách người dùng và thông tin của người dùng hiện tại từ Redux store
   const users = useSelector(state => state.user.users);
   const me = useSelector(state => state.auth.user);
-  const [requests, setRequests] =React.useState([]);
+  
+  // State hook để lưu trữ danh sách các yêu cầu kết bạn
+  const [requests, setRequests] = useState([]);
  
-
-  //getRequests
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const res = await getRequests(me._id);
-        setRequests(res);
-      } catch (error) {
-        console.error('Error caught:', error);
-      }
-    };
-    fetchRequests();
-  }, []);
-  console.log('Requests:', requests);
+  // Effect hook để lấy danh sách yêu cầu kết bạn khi component được render
+  const fetchRequests = async () => {
+    try {
+      // Gọi API để lấy danh sách yêu cầu kết bạn
+      const res = await getRequests(me._id);
+      // Cập nhật state với danh sách yêu cầu kết bạn
+      setRequests(res);
+    } catch (error) {
+      console.error('Error caught:', error);
+    }
+  };
+  useEffect(()=>{fetchRequests()},[]);
+  
+  // Xử lý chấp nhận yêu cầu kết bạn
   const handleAccept = async (userId) => {
     try {
-      // Assuming 'userId' is the ID of the sender (the person who sent the friend request)
-      // and 'me._id' is the ID of the receiver (the person who is accepting the request).
+      // Gọi API để chấp nhận yêu cầu kết bạn
       const response = await axios.post('http://localhost:5000/api/friends/acceptFriendRequest', {
         sender: userId,
         receiver: me._id,
       });
-
+      
       console.log('Friend request accepted:', response.data);
-      // Show a success notification
+      // Hiển thị thông báo thành công
       notification.success({
         message: 'Request Accepted',
         description: 'The friend request has been successfully accepted.'
       });
 
-      // Optionally, refresh the list of requests here to reflect the changes.
-      // This could involve calling `fetchRequests` again or removing the accepted request from the state.
+      // Cập nhật danh sách yêu cầu sau khi chấp nhận
       const updatedRequests = requests.filter(request => request._id !== userId);
       setRequests(updatedRequests);
 
     } catch (error) {
       console.error('Failed to accept friend request:', error);
+      // Hiển thị thông báo lỗi
       notification.error({
         message: 'Failed',
         description: 'Failed to accept friend request.'
@@ -53,37 +55,36 @@ const ListWindow = () => {
     }
   };
 
-
-
+  // Xử lý từ chối yêu cầu kết bạn
   const handleReject = async (userId) => {
     try {
       console.log('Rejecting friend request from:', userId, 'Me:', me._id);
       
-      // Corrected usage of axios.delete with request body
+      // Gọi API để từ chối yêu cầu kết bạn
       const response = await axios.delete('http://localhost:5000/api/friends/deleteFriendRequest', {
         data: { sender: userId, receiver: me._id },
       });
   
       console.log('Friend request rejected:', response.data);
-      // Show a success notification
+      // Hiển thị thông báo thành công
       notification.success({
         message: 'Request Rejected',
         description: 'The friend request has been successfully rejected.'
       });
   
-      // Refresh the list of requests here to reflect the changes
+      // Cập nhật danh sách yêu cầu sau khi từ chối
       const updatedRequests = requests.filter(request => request._id !== userId);
       setRequests(updatedRequests);
   
     } catch (error) {
       console.error('Failed to reject friend request:', error);
+      // Hiển thị thông báo lỗi
       notification.error({
         message: 'Failed',
         description: 'Failed to reject friend request.'
       });
     }
   };
-  
 
   return (
     <div>
@@ -93,17 +94,17 @@ const ListWindow = () => {
         dataSource={requests}
         renderItem={(item) => (
           <List.Item
-          actions={[
-            <Button style={{backgroundColor:'#76ABAE'}} key="accept" type="primary" onClick={() => handleAccept(item._id)}>
-              Chấp nhận
-            </Button>,
-            <Button key="reject" type="danger" onClick={() => handleReject(item._id)}>
-              Từ chối
-            </Button>,
-          ]}
+            actions={[
+              <Button style={{backgroundColor:'#76ABAE'}} key="accept" type="primary" onClick={() => handleAccept(item._id)}>
+                Chấp nhận
+              </Button>,
+              <Button key="reject" type="danger" onClick={() => handleReject(item._id)}>
+                Từ chối
+              </Button>,
+            ]}
           >
             <List.Item.Meta
-              avatar={<Avatar src={item.avatar} />} // Changed 'source' to 'src'
+              avatar={<Avatar src={item.avatar} />} // Sử dụng thuộc tính src thay vì source
               title={item.userName}
               description={`Tên đầy đủ: ${item.fullname}`}
             />
