@@ -12,7 +12,9 @@ const Home = () => {
       <Col span={6}><SideBar/> </Col>
       {/* <Col span={12}><ChatWindow/> </Col>
       <Col span={5}><Information /></Col> */}
-       <Col span={17}></Col>
+       <Col style={{display:'flex',alignItems:'center',justifyContent:'center'}} span={17}>
+        <p>Chào mừng bạn đến với HyberChat</p>
+        </Col>
     </Row>
   )
 }

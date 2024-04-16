@@ -30,7 +30,7 @@ const ChatWithFriend = () => {
       <Col span={1}><Tool /></Col>
       <Col span={6}><SideBar/> </Col>
       <Col span={17}><ChatWindow/> </Col>
-      {/* <Col span={5}><Information /></Col> */}
+      {/* <Col span={6}><Information /></Col> */}
       </Row>
   )
 }

@@ -139,17 +139,18 @@ export default function SideBar() {
       notification.error({ message: 'Failed to fetch friends list. Please try again.' });
     }
   }
-  const findFriend = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/user/id/${user1}`, {});
-      console.log("user:",user1);
-      setFriendsList(response.data);
-     dispatch(getFriendSuccess(response.data));
-    } catch (error) {
-      console.error('Error fetching friends list:', error);
-      notification.error({ message: 'Failed to fetch friends list. Please try again.' });
-    }
-  }
+  const showCreateGroupButton = memberGroup.length >= 2;
+  // const findFriend = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:5000/api/user/id/${user1}`, {});
+  //     console.log("user:",user1);
+  //     setFriendsList(response.data);
+  //    dispatch(getFriendSuccess(response.data));
+  //   } catch (error) {
+  //     console.error('Error fetching friends list:', error);
+  //     notification.error({ message: 'Failed to fetch friends list. Please try again.' });
+  //   }
+  // }
 
   const getChatData = async (chatId) => {
     try {
@@ -178,7 +179,7 @@ export default function SideBar() {
         <div>
           <AiOutlineUserAdd style={{ fontSize: 20, cursor: 'pointer' }} onClick={() => setIsPopupOpen(true)} />
           {isPopupOpen && (
-            <div className="popup-overlay" onClick={() => setIsPopupOpen(false)}>
+            <div className="popup-overlay" onClick={() => {setIsPopupOpen(false)}}>
               <div className="popup-content" onClick={(e) => e.stopPropagation()}>
                 <p>Thêm Bạn</p>
                 <input
@@ -228,9 +229,9 @@ export default function SideBar() {
                   )
                 })} 
                 </div>
-                <div style={{display:'flex',justifyContent:'space-around',width:'100%',backgroundColor:'blue'}}>
+                <div style={{display:'flex',justifyContent:'space-around',width:'100%'}}>
                   <button style={{width:150}} onClick={() => setIsOpenAddGroup(false)}>Đóng</button>
-                  <button style={{ width: 150 }} onClick={createGroup}>Tạo Group</button>
+                  {showCreateGroupButton && <button style={{ width: 150 }} onClick={createGroup}>Tạo Group</button>}
                 </div>
               </div>
             </div>
@@ -241,9 +242,9 @@ export default function SideBar() {
         <p style={{fontSize: '15px', marginBottom: '5px', fontWeight: '600' }}>
         Group Chat {listGroup.length}</p> 
       </div>
-      <div style={{ overflowY: 'scroll', flexDirection: 'column', width: '100%' }}>
+      <div style={{ maxHeight: 'calc(50vh - 122px)',overflowY: 'scroll', flexDirection: 'column', width: '100%' }}>
         {listGroup.map((item) => {
-          if (item.members.length > 2){
+          {
           return (
           <div
             key={item._id}
@@ -268,7 +269,7 @@ export default function SideBar() {
         }
       })}
       </div>
-      <div style={{border:'2px solid black',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
+      <div style={{maxHeight: 'calc(50vh - 122px)',border:'2px solid black',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
         <p style={{fontSize: '15px', marginBottom: '5px', fontWeight: '600' }}>
         Chat private</p> 
       </div>
