@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { verifyOTPForgotPwd } from '../api/allUser';
 
 const Verifyforgotpassword = () => {
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Verifyforgotpassword = () => {
 
         try {
             // Gửi yêu cầu xác thực OTP tới server
-            const response = await axios.put('http://localhost:5000/api/user/verifyOTPForgotPassword', {
+            const response = await axios.put(verifyOTPForgotPwd, {
                 email: state.email, // Sử dụng email được truyền qua từ trang Forgotpassword
                 userOTP: otp, // Gửi OTP nhập vào
                 password: password //password mới

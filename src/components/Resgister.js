@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { register } from '../api/allUser';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Register = () => {
     const userData = { userName, password, fullname, email, phoneNumber, birthday };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/user/register/send-otp', userData);
+      const response = await axios.post(register, userData);
       console.log('Registration successful:', response.data);
       navigate('/verify', { state: { email: email } });
     } catch (error) {

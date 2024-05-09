@@ -1,4 +1,4 @@
-const SERVER_IP = '192.168.2.40';
+const SERVER_IP = '192.168.1.232';
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
 const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
@@ -13,18 +13,34 @@ const API_CONFIG = {
 
     allUsers: 'user',
     login: 'user/login',
-    getUser: 'user/id', 
+    getUser: 'user/id/', 
     info: 'user/phone',
     register: 'user/register/send-otp',
     verify: 'user/register/verifyOTP',
     update: 'user/update',
-    listchats: 'user/getListChats',
+    listchats: 'user/getListChats/',
     sendOTPForgotPwd: 'user/sendOTPForgotPassword',
     verifyOTPForgotPwd: 'user/verifyOTPForgotPassword',
     changePassword: 'user/changePassword',
     getRequests: 'friends/getAllSendFriendRequest',
     deleteMessage: 'message/deleteMessage',
-    getListFriends:'user/listFriends'
+    getListFriends:'user/listFriends',
+    outchatgroup:'chat/outChatGroup',
+    deleteChatGroup:'chat/deleteChatGroup/',
+    sendMessagetoServer:'message/sendMessage',
+    getAllMessagesByChatId:'message/getAllMessagesByChatId/',
+    retrieveMessages:'message/retrieveMessages/',
+    getAllChatGroupByUserId:'chat/getAllChatGroupByUserId/',
+    addMembersToChatGroup:'chat/addMembersToChatGroup/',
+    addAdminToChatGroup:'chat/addAdminToChatGroup/',
+    deleteMembersChatGroup:'chat/deleteMembersChatGroup/',
+    sendFriendRequest:'friends/sendFriendRequest',
+    createChatGroup:'chat/createChatGroup',
+    update:'user/update/',
+    acceptFriendRequest:'friends/acceptFriendRequest',
+    deleteFriendRequest:'friends/deleteFriendRequest',
+    createChatPrivate:'chat/createChatPrivate',
+    changePassword:'user/changePassword',
   },
 };
 

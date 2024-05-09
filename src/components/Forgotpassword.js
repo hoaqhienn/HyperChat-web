@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { sendOTPForgotPwd } from '../api/allUser';
 
 const Forgotpassword = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Forgotpassword = () => {
         const userData = { email };
 
         try {
-            const response = await axios.post('http://localhost:5000/api/user/sendOTPForgotPassword', userData);
+            const response = await axios.post(sendOTPForgotPwd, userData);
             console.log('OTP sent successfully:', response.data);
             // Chuyển hướng người dùng đến trang xác minh mã OTP, truyền dữ liệu người dùng qua state
             navigate('/verifyforgotpassword', { state: { email: email } });

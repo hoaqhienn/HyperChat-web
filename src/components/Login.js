@@ -5,6 +5,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { loginUserSuccess } from '../redux/authSlice';
 import axios from 'axios';
+import { login } from '../api/allUser';
 const Login = () => {
     const dispatch = useDispatch();
 
@@ -14,8 +15,8 @@ const Login = () => {
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
 
-    const [account, setAccount] = useState('Thinh@admin123');
-    const [password, setPassword] = useState('Thinh@admin123');
+    const [account, setAccount] = useState('0942694947');
+    const [password, setPassword] = useState('Thinhnguyen2002@');
     const [passwordShown, setPasswordShown] = useState(false);
 
     const [error, setError] = useState(''); // State to store the error message
@@ -25,7 +26,7 @@ const Login = () => {
     };
     // Tạo một instance Axios với cấu hình mặc định
     const axiosInstance = axios.create({
-        baseURL: 'http://192.168.2.40:5000/api/user/login',
+        baseURL: login,
     });
 
     // Sử dụng Axios Interceptors để thêm token vào headers của mỗi request
@@ -44,7 +45,7 @@ const Login = () => {
         //192.168.2.40
         //192.168.1.6
         try {
-            const response = await axios.post('http://192.168.2.40:5000/api/user/login', {
+            const response = await axios.post(login, {
                 account: account,
                 password: password,
             });

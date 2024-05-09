@@ -27,7 +27,7 @@ import { getFriendSuccess } from "../../redux/friendSlice";
 import { saveChatItem } from "../../redux/chatSlice";
 import { deleteMessageAPI, retrieveMessages } from "../../api/apiMessager";
 import EmojiPicker from "emoji-picker-react";
-import { allUsers, getAllFriends } from "../../api/allUser";
+import { addAdminToChatGroup, addMembersToChatGroup, allUsers, deleteChatGroup, deleteMembersChatGroup, getAllChatGroupByUserId, getAllFriends, getAllMessagesByChatId, outchatgroup, sendMessagetoServer } from "../../api/allUser";
 import { CiEdit } from "react-icons/ci";
 import { FaRegBell } from "react-icons/fa";
 export default function ChatWindow() {
@@ -127,7 +127,7 @@ export default function ChatWindow() {
     console.log("phongggggggggg", userId, chatGroupId);
     try {
       const response = await axios.delete(
-        "http://localhost:5000/api/chat/outChatGroup",
+        outchatgroup,
         {
           data: { userId: userId, chatGroupId: chatGroupId },
         }
@@ -164,7 +164,7 @@ export default function ChatWindow() {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/chat/deleteChatGroup/${adminId}`, // Assuming chatGroupId should be part of the URL
+        `${deleteChatGroup}${adminId}`, // Assuming chatGroupId should be part of the URL
         {
           data: {
             // 'data' is used for sending the body in DELETE requests
@@ -292,7 +292,7 @@ export default function ChatWindow() {
       //
 
       const response = await axios.post(
-        "http://localhost:5000/api/message/sendMessage",
+        sendMessagetoServer,
         formData
       );
 
@@ -309,7 +309,7 @@ export default function ChatWindow() {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/message/getAllMessagesByChatId/${roomInfo._id}`
+          `${getAllMessagesByChatId}${roomInfo._id}`
         );
         console.log("Updated messages:", response.data);
         dispatch(saveChatItem(response.data)); // Assuming you are using Redux to manage state
@@ -349,7 +349,7 @@ export default function ChatWindow() {
       const getChatData = async (chatId) => {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/message/getAllMessagesByChatId/${chatId}`
+            `${getAllMessagesByChatId}${chatId}`
           );
           rommData = response.data;
         } catch (error) {
@@ -461,7 +461,7 @@ export default function ChatWindow() {
       // Make API call to recall the message
       try {
         const response = await axios.post(
-          `http://localhost:5000/api/message/retrieveMessages/${messageId}`
+          retrieveMessages(messageId)
         );
         console.log("Tin nhắn đã được thu hồi trên backend.", response.data);
       } catch (error) {
@@ -518,7 +518,7 @@ export default function ChatWindow() {
   const getListGroup = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/chat/getAllChatGroupByUserId/${userId}`
+        `${getAllChatGroupByUserId}${userId}`
       );
       setlisGroup(res.data);
     } catch (error) {
@@ -565,7 +565,7 @@ export default function ChatWindow() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/chat/addMembersToChatGroup/${adminId}`,
+        `${addMembersToChatGroup}${adminId}`,
         {
           // Include the adminId in the request
           chatGroupId: roomInfo._id,
@@ -607,7 +607,7 @@ export default function ChatWindow() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/chat/addAdminToChatGroup/${adminId}`,
+        `${addAdminToChatGroup}${adminId}`,
         {
           chatGroupId: roomInfo._id,
           memberId: selectedMemberId,
@@ -655,7 +655,7 @@ export default function ChatWindow() {
     try {
       // Ensure the URL is properly set to use chatGroupId, and parameters should be sent correctly
       const response = await axios.delete(
-        `http://localhost:5000/api/chat/deleteMembersChatGroup/${adminId}`,
+        `${deleteMembersChatGroup}${adminId}`,
         {
           data: {
             // 'data' is used for sending the body in DELETE requests
@@ -1370,9 +1370,10 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
                 message.content.files.map((file, index) =>
                   renderFileContent(file, index)
                 )}
+                
             </>
           )}
-
+          
           {showMenu && (
             <div
               style={{
@@ -1432,6 +1433,11 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
           )}
         </div>
       </div>
+      {isMyMessage && (
+          <div style={{display:'flex',flexDirection:'column'}}>
+            <Avatar src={users.find(item => message.sender === item._id)?.avatar} style={{ width: 30, height: 30, marginLeft: 8 }}/>
+          </div>
+      )}
     </div>
   );
 }

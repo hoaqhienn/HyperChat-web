@@ -2,6 +2,7 @@ import React, { useState, useEffect  } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './css/Onboarding.css';
 import axios from 'axios';
+import { verify } from '../api/allUser';
 
 const Verify = () => {
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Verify = () => {
 
         try {
             // Gửi yêu cầu xác thực OTP tới server
-            const response = await axios.post('http://localhost:5000/api/user/register/verifyOTP', {
+            const response = await axios.post(verify, {
                 email: state.email, // Sử dụng email được truyền qua từ trang Register
                 userOTP: otp, // Gửi OTP nhập vào
             });
@@ -48,7 +49,7 @@ const Verify = () => {
         if (!resendAvailable) return;
         
         try {
-            await axios.post('http://localhost:5000/api/user/register/verifyOTP', {
+            await axios.post(verify, {
                 email: state.email,
             });
 

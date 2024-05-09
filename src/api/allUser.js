@@ -38,7 +38,7 @@ const getAllFriends = async userId => {
     // Lặp qua danh sách ID để lấy thông tin của từng bạn bè
     for (let i = 0; i < listFriend.length; i++) {
       const res = await axios.get(
-        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}/${listFriend[i]._id}`, // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
+        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}${listFriend[i]._id}`, // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
       );
       List.push(res.data); // Thêm thông tin người dùng vào danh sách
     }
@@ -76,6 +76,33 @@ const getRequests = async userId => {
     throw error.response ? error.response.data.message : error.message; // Ném lỗi nếu có lỗi xảy ra
   }
 };
-
+// hàm đăng nhập
+const login = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.login}`;
+const outchatgroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.outchatgroup}`;
+const deleteChatGroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.deleteChatGroup}`;
+const sendMessagetoServer = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendMessagetoServer}`;
+const getAllMessagesByChatId = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getAllMessagesByChatId}`;
+const getAllChatGroupByUserId = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getAllChatGroupByUserId}`;
+const addMembersToChatGroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.addMembersToChatGroup}`;
+const addAdminToChatGroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.addAdminToChatGroup}`;
+const deleteMembersChatGroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.deleteMembersChatGroup}`;
+const info = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.info}`;
+const sendFriendRequest = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendFriendRequest}`;
+const listchats = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.listchats}`;
+const createChatGroup = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.createChatGroup}`;
+const getUser = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}`;
+const update = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.update}`;
+const acceptFriendRequest = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.acceptFriendRequest}`;
+const deleteFriendRequest = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.deleteFriendRequest}`;
+const createChatPrivate = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.createChatPrivate}`;
+const register = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.register}`;
+const sendOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPForgotPwd}`;
+const verify = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPForgotPwd}`;
+const verifyOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.verifyOTPForgotPwd}`;
+const changePasswords = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.changePassword}`;
 // Xuất các hàm để sử dụng ở bên ngoài module
-export {allUsers, getRequests,getAllFriends};
+export {allUsers, getRequests,getAllFriends,login,outchatgroup,deleteChatGroup,sendMessagetoServer,
+  getAllMessagesByChatId,getAllChatGroupByUserId,addMembersToChatGroup,addAdminToChatGroup,deleteMembersChatGroup,info,
+  sendFriendRequest,listchats,createChatGroup,getUser,update,acceptFriendRequest,deleteFriendRequest,createChatPrivate,
+  register,sendOTPForgotPwd,verify,verifyOTPForgotPwd,changePasswords
+};

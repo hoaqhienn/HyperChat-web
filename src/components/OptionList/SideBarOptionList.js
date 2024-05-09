@@ -6,7 +6,7 @@ import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import '../css/Tool.css';
 import { PiUserListBold } from 'react-icons/pi';
-import { getAllFriends } from '../../api/allUser';
+import { createChatPrivate, getAllFriends, getAllMessagesByChatId, info, listchats, sendFriendRequest } from '../../api/allUser';
 import { useNavigate } from 'react-router-dom';
 import { saveChatInfo, saveChatItem } from '../../redux/chatSlice';
 
@@ -30,7 +30,7 @@ export default function SideBarOptionList() {
   // Effect Hook để tìm kiếm người dùng dựa trên số điện thoại khi phoneNumber thay đổi
   useEffect(() => {
     if (!phoneNumber) return;
-    axios.get(`http://localhost:5000/api/user/phone/${phoneNumber}`)
+    axios.get(`${info}/${phoneNumber}`)
       .then(response => {
         setUser(response.data);
       })
@@ -61,7 +61,7 @@ export default function SideBarOptionList() {
       try {
         const token = localStorage.getItem('userToken');
         const userId = localStorage.getItem('userId');
-        const response = await axios.get(`http://localhost:5000/api/user/getListChats/${userId}`, {
+        const response = await axios.get(`${listchats}${userId}`, {
         });
         setListChat(response.data);
         dispatch(getFriendSuccess(response.data));
@@ -96,7 +96,7 @@ export default function SideBarOptionList() {
   //render tin nhắn 
   const getChatData = async (chatId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/message/getAllMessagesByChatId/${chatId}`);
+      const response = await axios.get(`${getAllMessagesByChatId}${chatId}`);
       console.log("Room-data:", response.data);
       dispatch(saveChatItem(response.data));
 
@@ -113,7 +113,7 @@ export default function SideBarOptionList() {
 
     try {
       const senderId = localStorage.getItem('userId'); // Lấy ID của người dùng hiện tại từ local storage
-      await axios.post(`http://localhost:5000/api/friends/sendFriendRequest`, {
+      await axios.post(sendFriendRequest, {
         sender: senderId,
         receiver: user._id
       });
@@ -189,10 +189,6 @@ export default function SideBarOptionList() {
         {/* Danh sách bạn bè */}
         <div style={{ display:'flex', alignItems:'center', width:370, height:80}}>
           <PiUserListBold style={{ marginLeft:30, fontSize:30}}/>
-          <p style={{ fontSize:20, marginLeft:10}}>Nhóm({listFriend.length})</p>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', width:370, height:80}}>
-          <PiUserListBold style={{ marginLeft:30, fontSize:30}}/>
           <p style={{ fontSize:20, marginLeft:10}}>Danh sách bạn bè ({listFriend.length})</p>
         </div>
         {listFriend.map((item,index)=>
@@ -202,7 +198,7 @@ export default function SideBarOptionList() {
           onClick={async () => {
             try {
                 const member = [];
-                const response = await axios.post(`http://localhost:5000/api/chat/createChatPrivate`, {
+                const response = await axios.post(createChatPrivate, {
                     user1: me._id,
                     user2: item._id
                 });

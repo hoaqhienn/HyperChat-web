@@ -4,7 +4,7 @@ import { PiUserListBold } from "react-icons/pi";
 import { HiOutlineLogout } from "react-icons/hi";
 import { IoSettingsOutline, IoClose } from "react-icons/io5";
 import { IoIosInformationCircleOutline, IoMdCreate } from "react-icons/io";
-import { Avatar, notification, Modal, Form, Input, Button } from 'antd';
+import { Avatar, notification, Modal, Form, Input, Button, message } from 'antd';
 import { Upload } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -12,29 +12,61 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../css/Tool.css';
 import { socket } from '../../socket/socket';
+import { allUsers, changePasswords, getUser, update } from '../../api/allUser';
+import moment from 'moment/moment';
+import { useSelector } from 'react-redux';
 
 export default function Tool() {
+  const users = useSelector((state) => state.user.users);
   const navigate = useNavigate();
-
+  const userId = localStorage.getItem('userId');
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(''); // Thêm trạng thái cho lỗi
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [avatar, setAvatar] = useState();
-
+  const [changePassword,setChangePassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
+  const [oldPassword,setOldPassword] = useState("");
+  const [isOpenChangePassword, setIsOpenChangePassword] = useState(false)
   const handleLogout = () => {
     localStorage.removeItem('userToken'); // Giả định token được lưu với key là 'userToken'
     navigate('/login'); 
     // socket.disconnect(); 
   };
-  const handleAvatarChange = info => {
-    if (info.file.status === 'uploading') {
-      return;
+  const openChangePassword = () => {
+    setIsOpenChangePassword(true);
+  };
+
+  const closeChangePassword = () => {
+    setIsOpenChangePassword(false);
+  };
+  const handleAvatarChange = async (event) => {
+    const avatar = event.target.files[0]; // Lấy file từ sự kiện onChange
+    try {
+      const formData = new FormData(); // Tạo đối tượng FormData
+      formData.append("avatar", avatar); // Đưa file vào FormData với tên 'file'
+
+      // Gửi yêu cầu POST đến máy chủ với FormData chứa hình ảnh
+      const response = await axios.post(`${update}${userId}`, formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      //render lại hình ảnh vừa update
+      message.success("Đã cập nhật ảnh đại diện thành công");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật ảnh đại diện:", error);
+      message.error("Có lỗi xảy ra khi cập nhật ảnh đại diện");
     }
-    if (info.file.status === 'done') {
-      // Sử dụng URL.createObjectURL để tạo URL tạm thời cho file được chọn
-      setAvatar(URL.createObjectURL(info.file.originFileObj));
+  };
+  const changeAvatar = () => {
+    const avatarInput = document.getElementById('avatarUpload');
+    if (avatarInput) {
+      avatarInput.click();
     }
   };
   useEffect(() => {
@@ -46,7 +78,7 @@ export default function Tool() {
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-        const response = await axios.get(`http://localhost:5000/api/user/id/${userId}`, config); // Sử dụng _id trong yêu cầu
+        const response = await axios.get(`${getUser}${userId}`, config); // Sử dụng _id trong yêu cầu
         setUserInfo(response.data);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
@@ -60,40 +92,81 @@ export default function Tool() {
       fetchUserInfo();
     }
   }, [isPopupOpen]);
-
+  
   const handleUpdateUserInfo = async (values) => {
-    setIsLoading(true);
+    console.log(users)
     try {
-      const formData = new FormData();
-      formData.append('fullname', values.fullname);
-      formData.append('email', values.email);
-      formData.append('phoneNumber', values.phoneNumber);
-      formData.append('birthday', values.birthday);
-
-      // Chỉ thêm avatar nếu người dùng đã chọn một hình ảnh
-      if (avatar) {
-        formData.append('avatar', avatar);
+      // Regular expression to match only letters, including accented characters
+      const onlyLettersRegex = /^[\p{L}\s]+$/u;
+  
+      // Check if fullname contains only letters
+      if (!onlyLettersRegex.test(values.fullname)) {
+        throw new Error('Tên chỉ được chứa chữ cái');
       }
-
+      if (users.some(user => user.userName === values.userName)) {
+        throw new Error('Trùng UserName');
+      }
+      const formData = new FormData();
+      formData.append('fullname', values.fullname ?? userInfo.fullname);
+      formData.append('userName', values.userName ?? userInfo.userName);
+      formData.append('birthday', values.birthday ?? userInfo.birthday);
+  
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('userToken');
-      await axios.post(`http://localhost:5000/api/user/update/${userId}`, formData, {
-        headers: {
-          Authorization: `${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
+      await axios.post(`${update}${userId}`, formData);
+  
       notification.success({ message: 'Thông tin đã được cập nhật thành công!' });
       setIsUpdateModalOpen(false);
     } catch (error) {
-      console.error('Failed to update user info:', error);
-      notification.error({ message: 'Cập nhật thông tin thất bại. Vui lòng thử lại.' });
+      console.error('Lỗi khi cập nhật thông tin người dùng:', error);
+      notification.error({ message: `${error.message}` });
     } finally {
       setIsLoading(false);
     }
   };
+  const isValidPassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return regex.test(password);
+  };
+  const handleConfirm = async () => {
+    const userId = localStorage.getItem('userId'); // Lấy _id của người dùng từ localStorage
+    if (oldPassword === "",changePassword === "",confirmPassword === ""){
+      setError('Nhập trường còn trống');
+      return;
+    }
 
+    if (oldPassword === changePassword) {
+      setError('Mật khẩu mới phải khác mật khẩu cũ');
+      return;
+    }
+
+    if (changePassword !== confirmPassword) {
+      setError('Mật khẩu mới và mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    if (!isValidPassword(changePassword)) {
+      setError('Mật khẩu mới không đủ mạnh');
+      return;
+    }
+    try {
+
+      const response = await axios.put(changePasswords, {
+          userId: userId,
+          oldPassword: oldPassword,
+          newPassword: confirmPassword
+      });
+      setError('');
+      // Nếu xác thực thành công logout
+      message.success('Đã đổi mật khẩu thành công, tự động đăng xuất sau 10 giây', 10, () => {
+        handleLogout();
+      });
+  } catch (error) {
+      // Hiển thị lỗi nếu có
+      setError("Mật khẩu cũ không đúng");
+  }
+    // Nếu tất cả các điều kiện đều được đáp ứng, tiến hành xác nhận hoặc thực hiện hành động khác ở đây
+  };
   return (
     <div className="tool-container">
       <Avatar size={50} style={{ border: '2px solid white' }} src={userInfo.avatar || 'path_to_default_avatar.jpg'} onClick={() => setIsPopupOpen(true)} />
@@ -107,9 +180,21 @@ export default function Tool() {
       <div className='wrapper'>
         <IoIosInformationCircleOutline className="icon info" style={{ fontSize: 30 }} />
       </div>
-      <div className='wrapper' title='Cài đặt'>
+      <div onClick={openChangePassword} className='wrapper' title='Đổi Mật Khẩu'>
         <IoSettingsOutline className="icon" style={{ fontSize: 30 }} />
       </div>
+      <Modal width="500px" centered={true} bodyStyle={{ height: '300px' }} title="Đổi Mật Khẩu" visible={isOpenChangePassword} onCancel={closeChangePassword} footer={null}>
+        <div style={{ flexDirection:'column',justifyContent:'space-around',height: "100%", width: "100%",display: 'flex' }}>
+          <label>Nhập mật khẩu cũ</label>
+          <input type="password" onChange={(e) => setOldPassword(e.target.value)} value={oldPassword}></input>
+          <label>Nhập mật khẩu mới</label>
+          <input type="password" onChange={(e) => setChangePassword(e.target.value)} value={changePassword}></input>
+          <label>Nhập lại Mật Khẩu Mới</label>
+          <input type="password" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}></input>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <button onClick={handleConfirm}>Xác Nhận</button>
+        </div>
+      </Modal>
       <div className='wrapper' title='Đăng xuất'>
         <HiOutlineLogout onClick={handleLogout} className="icon" style={{ fontSize: 30 }} />
       </div>
@@ -156,6 +241,7 @@ export default function Tool() {
                     zIndex: 2,
                     border: '3px solid white',
                   }} />
+                  
                   <IoMdCreate size={24}
                     style={{
                       position: 'absolute',
@@ -167,6 +253,7 @@ export default function Tool() {
                     }}
                     onClick={() => setIsUpdateModalOpen(true)}
                   />
+                  
                   <Modal
                     title="Cập nhật thông tin"
                     open={isUpdateModalOpen}
@@ -178,32 +265,14 @@ export default function Tool() {
                       onFinish={handleUpdateUserInfo}
                     >
                       {/* Các Form.Item khác */}
-                      <Form.Item label="Avatar">
-                        <Upload
-                          name="avatar"
-                          listType="picture-card"
-                          className="avatar-uploader"
-                          showUploadList={false}
-                          beforeUpload={() => false} // Xử lý file mà không tự động tải lên
-                          onChange={handleAvatarChange}
-                        >
-                          {avatar ? <img src={avatar} alt="avatar" style={{ width: '100%' }} /> : <div>
-                            {<PlusOutlined />}
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </div>}
-                        </Upload>
-                      </Form.Item>
                       <Form.Item label="Họ và tên" name="fullname">
                         <Input />
                       </Form.Item>
-                      <Form.Item label="Email" name="email">
-                        <Input />
-                      </Form.Item>
-                      <Form.Item label="Số điện thoại" name="phoneNumber">
+                      <Form.Item label="Username" name="userName">
                         <Input />
                       </Form.Item>
                       <Form.Item label="Ngày sinh" name="birthday">
-                        <Input />
+                        <Input type="date"/>
                       </Form.Item>
                      
                       <Button type="primary" htmlType="submit">
@@ -212,13 +281,29 @@ export default function Tool() {
                     </Form>
                   </Modal>
                 </div>
-
+                <button
+              className="infor"
+              style={{
+                marginTop: 50,
+                marginLeft:180,
+                marginBottom:-100,
+                width: 100,
+                height: 50,
+                borderRadius: 20,
+                backgroundColor: '#76ABAE'
+              }}
+              onClick={changeAvatar}
+            >
+              <input type="file" id="avatarUpload" style={{ display: 'none' }} onChange={handleAvatarChange} />
+              Thay đổi Avatar
+            </button>
                 {/* User Information */}
                 <div style={{ paddingTop: '100px' }}> {/* Increase paddingTop to ensure clear separation from avatar */}
                   <p>Full Name: {userInfo.fullname}</p>
                   <p>Email: {userInfo.email}</p>
+                  <p>Username: {userInfo.userName}</p>
                   <p>Phone Number: {userInfo.phoneNumber}</p>
-                  <p>Birthday: {userInfo.birthday}</p>
+                  <p>Birthday:{moment(userInfo.birthday).format('DD-MM-YYYY')}</p>
                 </div>
               </div>
             )}

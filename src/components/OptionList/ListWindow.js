@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Avatar, List, notification ,Button} from 'antd';
 import {useSelector} from 'react-redux';
-import {getRequests, getData} from '../../api/allUser';
+import {getRequests, getData, acceptFriendRequest, deleteFriendRequest} from '../../api/allUser';
 
 const ListWindow = () => {
   // Lấy danh sách người dùng và thông tin của người dùng hiện tại từ Redux store
@@ -29,7 +29,7 @@ const ListWindow = () => {
   const handleAccept = async (userId) => {
     try {
       // Gọi API để chấp nhận yêu cầu kết bạn
-      const response = await axios.post('http://localhost:5000/api/friends/acceptFriendRequest', {
+      const response = await axios.post(acceptFriendRequest, {
         sender: userId,
         receiver: me._id,
       });
@@ -61,7 +61,7 @@ const ListWindow = () => {
       console.log('Rejecting friend request from:', userId, 'Me:', me._id);
       
       // Gọi API để từ chối yêu cầu kết bạn
-      const response = await axios.delete('http://localhost:5000/api/friends/deleteFriendRequest', {
+      const response = await axios.delete(deleteFriendRequest, {
         data: { sender: userId, receiver: me._id },
       });
   

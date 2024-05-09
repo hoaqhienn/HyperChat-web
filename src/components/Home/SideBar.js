@@ -9,7 +9,7 @@ import '../css/Tool.css';
 import { socket } from '../../socket/socket';
 import { getFriendSuccess } from '../../redux/friendSlice';
 import { saveChatInfo, saveChatItem } from '../../redux/chatSlice';
-import { getAllFriends } from '../../api/allUser';
+import { createChatGroup, getAllChatGroupByUserId, getAllFriends, getAllMessagesByChatId, info, listchats, sendFriendRequest } from '../../api/allUser';
 
 
 export default function SideBar() {
@@ -33,7 +33,7 @@ export default function SideBar() {
 
   useEffect(() => {
     if (!phoneNumber) return;
-    axios.get(`http://localhost:5000/api/user/phone/${phoneNumber}`)
+    axios.get(`${info}/${phoneNumber}`)
       .then(response => {
         setUser(response.data);
       })
@@ -59,7 +59,7 @@ export default function SideBar() {
   useEffect(() => {
     const getListGroup = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/chat/getAllChatGroupByUserId/${user1._id}`);
+        const res = await axios.get(`${getAllChatGroupByUserId}${user1._id}`);
         setListGroup(res.data);
         console.log(res.data);
       } catch (error) {
@@ -90,7 +90,7 @@ export default function SideBar() {
     }
 
     try {
-      await axios.post(`http://localhost:5000/api/friends/sendFriendRequest`, {
+      await axios.post(sendFriendRequest, {
         sender: senderId,
         receiver: user._id
       });
@@ -108,13 +108,13 @@ export default function SideBar() {
       try {
         const token = localStorage.getItem('userToken');
         const userId = localStorage.getItem('userId');
-        const response = await axios.get(`http://localhost:5000/api/user/getListChats/${userId}`, {
-
+        const response = await axios.get(`${listchats}${userId}`, {
         });
         setFriendsList(response.data);
         dispatch(getFriendSuccess(response.data));
       } catch (error) {
         console.error('Error fetching friends list:', error);
+        console.log(listchats)
         notification.error({ message: 'Failed to fetch. Please try again.' });
       }
     };
@@ -124,7 +124,7 @@ export default function SideBar() {
   // Tạo Danh sách chat group
   const createGroup = async () =>{
     try {
-      const response = await axios.post('http://localhost:5000/api/chat/createChatGroup',{
+      const response = await axios.post(createChatGroup,{
         admin: [user1._id],
         name: groupName,
         members: memberGroup.concat(user1._id),
@@ -154,7 +154,7 @@ export default function SideBar() {
 
   const getChatData = async (chatId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/message/getAllMessagesByChatId/${chatId}`);
+      const response = await axios.get(`${getAllMessagesByChatId}${chatId}`);
       console.log("Room-data:", response.data);
       dispatch(saveChatItem(response.data));
 
@@ -242,7 +242,7 @@ export default function SideBar() {
           )}
         </div>
       </div>
-      <div style={{borderBottom:'1px solid',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
+      {/* <div style={{borderBottom:'1px solid',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
         <p style={{fontSize: '15px', marginBottom: '5px', fontWeight: '600' }}>
         Group Chat {listGroup.length}</p> 
       </div>
@@ -272,14 +272,14 @@ export default function SideBar() {
         );
         }
       })}
-      </div>
+      </div> */}
       <div style={{maxHeight: 'calc(50vh - 122px)',borderBottom:'1px solid',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
         <p style={{fontSize: '15px', marginBottom: '5px', fontWeight: '600' }}>
         Chat private</p> 
       </div>
       <div style={{ overflowY: 'scroll', flexDirection: 'column', width: '100%' }}>
         {friendsList.map((friend) => {
-          if (friend.members.length <= 2){
+          {
           return (
           <div
             key={friend._id}
