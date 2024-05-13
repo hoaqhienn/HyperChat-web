@@ -8,7 +8,7 @@ import React, { useState, useEffect, useRef } from "react";
 import API_CONFIG from "../../api/apiconfig";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { IoMdExit  } from "react-icons/io";
+import { IoMdExit } from "react-icons/io";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { FiVideo } from "react-icons/fi";
@@ -27,7 +27,18 @@ import { getFriendSuccess } from "../../redux/friendSlice";
 import { saveChatItem } from "../../redux/chatSlice";
 import { deleteMessageAPI, retrieveMessages } from "../../api/apiMessager";
 import EmojiPicker from "emoji-picker-react";
-import { addAdminToChatGroup, addMembersToChatGroup, allUsers, deleteChatGroup, deleteMembersChatGroup, getAllChatGroupByUserId, getAllFriends, getAllMessagesByChatId, outchatgroup, sendMessagetoServer } from "../../api/allUser";
+import {
+  addAdminToChatGroup,
+  addMembersToChatGroup,
+  allUsers,
+  deleteChatGroup,
+  deleteMembersChatGroup,
+  getAllChatGroupByUserId,
+  getAllFriends,
+  getAllMessagesByChatId,
+  outchatgroup,
+  sendMessagetoServer,
+} from "../../api/allUser";
 import { CiEdit } from "react-icons/ci";
 import { FaRegBell } from "react-icons/fa";
 export default function ChatWindow() {
@@ -94,9 +105,8 @@ export default function ChatWindow() {
             }}
             onClick={onRemoveGroup}
           >
-            <IoMdExit style={{ marginRight: 8 ,color:'red'}} />{" "}
-          
-           <span style={{color:'red'}}>Rời nhóm</span> 
+            <IoMdExit style={{ marginRight: 8, color: "red" }} />{" "}
+            <span style={{ color: "red" }}>Rời nhóm</span>
           </button>
         </li>
         <li>
@@ -113,8 +123,8 @@ export default function ChatWindow() {
             }}
             onClick={onDissolveGroup}
           >
-            <IoTrashBinOutline  style={{ marginRight: 8, color: 'red' }} />
-            <span style={{color:'red'}}>Giải tán nhóm</span>
+            <IoTrashBinOutline style={{ marginRight: 8, color: "red" }} />
+            <span style={{ color: "red" }}>Giải tán nhóm</span>
           </button>
         </li>
       </ul>
@@ -126,12 +136,9 @@ export default function ChatWindow() {
     const chatGroupId = roomInfo._id; // Assuming roomInfo contains the chat group ID
     console.log("phongggggggggg", userId, chatGroupId);
     try {
-      const response = await axios.delete(
-        outchatgroup,
-        {
-          data: { userId: userId, chatGroupId: chatGroupId },
-        }
-      );
+      const response = await axios.delete(outchatgroup, {
+        data: { userId: userId, chatGroupId: chatGroupId },
+      });
       console.log("Successfully left group:", response.data);
       notification.success({
         message: "You have successfully left the group.",
@@ -291,10 +298,7 @@ export default function ChatWindow() {
 
       //
 
-      const response = await axios.post(
-        sendMessagetoServer,
-        formData
-      );
+      const response = await axios.post(sendMessagetoServer, formData);
 
       console.log("Message sent:", response.data);
       setUpdateTrigger((prev) => !prev); // Toggle to trigger useEffect
@@ -460,9 +464,7 @@ export default function ChatWindow() {
 
       // Make API call to recall the message
       try {
-        const response = await axios.post(
-          retrieveMessages(messageId)
-        );
+        const response = await axios.post(retrieveMessages(messageId));
         console.log("Tin nhắn đã được thu hồi trên backend.", response.data);
       } catch (error) {
         console.error("Failed to recall message on the backend:", error);
@@ -517,9 +519,7 @@ export default function ChatWindow() {
   //lấy tất cả chat
   const getListGroup = async () => {
     try {
-      const res = await axios.get(
-        `${getAllChatGroupByUserId}${userId}`
-      );
+      const res = await axios.get(`${getAllChatGroupByUserId}${userId}`);
       setlisGroup(res.data);
     } catch (error) {
       console.error("Error caught:", error);
@@ -691,7 +691,6 @@ export default function ChatWindow() {
       }}
     >
       <div style={{ width: "65%", borderRight: "1px solid #CCCCCC" }}>
-        
         <div
           style={{
             width: "100%",
@@ -742,12 +741,15 @@ export default function ChatWindow() {
             </div>
           </div>
           <SearchOutlined className="search-icon" />
-          
-          <AiOutlineUsergroupAdd
-            className="search-icon"
-            style={{ cursor: "pointer" }}
-            onClick={() => setIsOpenAddGroup(true)}
-          />
+
+          {roomInfo.members && roomInfo.members.length > 2 && (
+            <AiOutlineUsergroupAdd
+              className="search-icon"
+              style={{ cursor: "pointer" }}
+              onClick={() => setIsOpenAddGroup(true)}
+            />
+          )}
+
           {isOpenAddgroup && (
             <div
               className="popup-overlay"
@@ -791,15 +793,20 @@ export default function ChatWindow() {
                             height: 50,
                             justifyContent: "space-between",
                             borderRadius: 10,
-                            borderColor:'#76ABAE'
+                            borderColor: "#76ABAE",
                           }}
                         >
-                          <div style={{display:'flex',alignItems: "center",}}> <Avatar
-                            src={item.avatar}
-                            style={{ width: 45, height: 45 }}
-                          ></Avatar>
-                          <p>{item.fullname}</p></div>
-                         
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            {" "}
+                            <Avatar
+                              src={item.avatar}
+                              style={{ width: 45, height: 45 }}
+                            ></Avatar>
+                            <p>{item.fullname}</p>
+                          </div>
+
                           <input
                             style={{ marginRight: 20 }}
                             type="checkbox"
@@ -833,22 +840,23 @@ export default function ChatWindow() {
                 </div>
               </div>
             </div>
-            
           )}
-        
+
           <FiVideo className="search-icon" />
           <div style={{ position: "relative" }}>
-            {" "}
-            {/* Ensure this is positioned relatively */}
-            <PiListDashesBold
-              className="search-icon"
-              onClick={() => setShowMenu(!showMenu)}
-            />
-            {showMenu && (
-              <Menu
-                onRemoveGroup={handleRemoveGroup}
-                onDissolveGroup={handleDissolveGroup}
-              />
+            {roomInfo.members && roomInfo.members.length > 2 && (
+              <>
+                <PiListDashesBold
+                  className="search-icon"
+                  onClick={() => setShowMenu(!showMenu)}
+                />
+                {showMenu && (
+                  <Menu
+                    onRemoveGroup={handleRemoveGroup}
+                    onDissolveGroup={handleDissolveGroup}
+                  />
+                )}
+              </>
             )}
           </div>
         </div>
@@ -1080,7 +1088,6 @@ export default function ChatWindow() {
                         viên)
                       </p>
                       <p>Tên Group: {roomInfo.name}</p>
-                    
                     </div>
                     <div
                       style={{
@@ -1129,7 +1136,7 @@ export default function ChatWindow() {
                                   ?.fullname
                               }
                             </div>
-                            <div style={{ display:"flex" }}>
+                            <div style={{ display: "flex" }}>
                               {isAdmin && member !== userId && (
                                 <button
                                   style={{
@@ -1143,7 +1150,9 @@ export default function ChatWindow() {
                                     deletemember(member);
                                   }}
                                 >
-                                 <span style={{color:'white'}} >Xóa Thành Viên</span> 
+                                  <span style={{ color: "white" }}>
+                                    Xóa Thành Viên
+                                  </span>
                                 </button>
                               )}
                               {isAdmin && member !== userId && (
@@ -1156,12 +1165,21 @@ export default function ChatWindow() {
                                   }}
                                   onClick={() => addAdmin(member)}
                                 >
-                                 <span style={{color:'white'}} >Cấp quyền</span> 
+                                  <span style={{ color: "white" }}>
+                                    Cấp quyền
+                                  </span>
                                 </button>
                               )}{" "}
                               {isAdmin && member !== userId && (
                                 <button
-                                style={{boder:'none',backgroundColor:'white',color:'black',width:100,height:30,borderRadius:5 }}
+                                  style={{
+                                    boder: "none",
+                                    backgroundColor: "white",
+                                    color: "black",
+                                    width: 100,
+                                    height: 30,
+                                    borderRadius: 5,
+                                  }}
                                   onClick={() => handleSelectMember(member)}
                                 >
                                   Chọn
@@ -1370,18 +1388,18 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
                 message.content.files.map((file, index) =>
                   renderFileContent(file, index)
                 )}
-                
             </>
           )}
-          
+
           {showMenu && (
             <div
               style={{
                 position: "absolute",
-                top: 0,
+                top: 10,
                 left: isMyMessage ? null : "calc((100% - 100%)+auto)", // Menu on the right for friend's message
                 right: isMyMessage ? "calc(100% - 100%)" : null, // For your message, menu appears on the left
                 width: "120px",
+
                 background: "#fff",
                 border: "1px solid #ccc",
                 padding: "5px 10px",
@@ -1401,19 +1419,21 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
               >
                 Chuyển tiếp
               </button>
-              <button
-                style={{
-                  display: "block",
-                  width: "100%",
-                  backgroundColor: "#76ABAE",
-                  border: "none",
-                  borderRadius: "5px",
-                  marginTop: "5px",
-                }}
-                onClick={() => onRecall(message._id)}
-              >
-                Thu hồi
-              </button>
+              {message.sender === userId && (
+                <button
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    backgroundColor: "#76ABAE",
+                    border: "none",
+                    borderRadius: "5px",
+                    marginTop: "5px",
+                  }}
+                  onClick={() => onRecall(message._id)}
+                >
+                  Thu hồi
+                </button>
+              )}
               {message.sender === userId && (
                 <button
                   style={{
@@ -1434,9 +1454,12 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
         </div>
       </div>
       {isMyMessage && (
-          <div style={{display:'flex',flexDirection:'column'}}>
-            <Avatar src={users.find(item => message.sender === item._id)?.avatar} style={{ width: 30, height: 30, marginLeft: 8 }}/>
-          </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <Avatar
+            src={users.find((item) => message.sender === item._id)?.avatar}
+            style={{ width: 30, height: 30, marginLeft: 8 }}
+          />
+        </div>
       )}
     </div>
   );

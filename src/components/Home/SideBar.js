@@ -28,6 +28,7 @@ export default function SideBar() {
   const [groupName, setGroupName] = useState('');
   const [memberGroup, setMemberGroup] = useState([]);
   const [listGroup, setListGroup] = useState([]);
+  const [refreshGroups, setRefreshGroups] = useState(false);
   const navigate = useNavigate();
 
 
@@ -67,7 +68,7 @@ export default function SideBar() {
       }
     };
     getListGroup();
-  }, []);
+  }, [refreshGroups]);
   // Quản lý việc lựa chọn thành viên trong group
   const handleCheckboxChange = (e, itemId) => {
     if (e.target.checked) {
@@ -133,7 +134,9 @@ export default function SideBar() {
       setIsOpenAddGroup(false);
       setGroupName('');
       setMemberGroup([]);
-
+      setRefreshGroups(prev => !prev); // Toggle để kích hoạt useEffect
+        notification.success({ message: 'Group created successfully!' });
+        window.location.reload();
     } catch (error) {
       console.error('Lỗi', error);
       notification.error({ message: 'Failed to fetch friends list. Please try again.' });
@@ -198,7 +201,7 @@ export default function SideBar() {
                 )}
 
                 <div>
-                  <button style={{}} onClick={() => setIsPopupOpen(false)}>Đóng</button>
+                  <button style={{backgroundColor:'#76ABAE',border:'1px',borderRadius:5,padding:'5px',marginLeft:'10px'}} onClick={() => setIsPopupOpen(false)}> <span style={{color:'white'}}>Đóng</span> </button>
                 </div>
               </div>
             </div>

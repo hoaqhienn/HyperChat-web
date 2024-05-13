@@ -1,5 +1,6 @@
 .search-icon {
-    margin-left: 15px;
+  gap: 10px;
+    margin-left: 20px;
     font-size: 25px;
     transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển đổi mượt mà */
   }
