@@ -135,8 +135,8 @@ export default function SideBar() {
       setGroupName('');
       setMemberGroup([]);
       setRefreshGroups(prev => !prev); // Toggle để kích hoạt useEffect
-        notification.success({ message: 'Group created successfully!' });
-        window.location.reload();
+      notification.success({ message: 'Group created successfully!' });
+      window.location.reload();
     } catch (error) {
       console.error('Lỗi', error);
       notification.error({ message: 'Failed to fetch friends list. Please try again.' });

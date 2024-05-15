@@ -57,10 +57,10 @@ export default function Tool() {
         }
       );
       //render lại hình ảnh vừa update
-      message.success("Đã cập nhật ảnh đại diện thành công");
+      notification.success("Đã cập nhật ảnh đại diện thành công");
     } catch (error) {
       console.error("Lỗi khi cập nhật ảnh đại diện:", error);
-      message.error("Có lỗi xảy ra khi cập nhật ảnh đại diện");
+      notification.error("Có lỗi xảy ra khi cập nhật ảnh đại diện");
     }
   };
   const changeAvatar = () => {
@@ -71,6 +71,7 @@ export default function Tool() {
   };
   useEffect(() => {
     const fetchUserInfo = async () => {
+      console.log(userInfo)
       setIsLoading(true); // Đặt lại trạng thái tải mỗi khi mở modal
       try {
         const token = localStorage.getItem('userToken'); // Lấy token từ localStorage

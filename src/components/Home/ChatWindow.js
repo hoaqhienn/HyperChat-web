@@ -239,21 +239,21 @@ export default function ChatWindow() {
       const img = await sendMessageToServer(newMessage, file);
       console.log("img", img.views);
       if (img.views.includes(userId)) {
-        if (img.length > 0) {
-          const fileExtension = getFileExtensionFromUrl(img[0]);
-
+        if (img.files[0].length > 0) {
+          const fileExtension = getFileExtensionFromUrl(img.files[0]);
+          console.log("fileExtension", fileExtension);
           if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
             messageType = "image";
             messageContent = "";
-            imageContent = img[0];
+            imageContent = img.files[0];
           } else if (["mp4", "mov", "avi"].includes(fileExtension)) {
             messageType = "video";
             messageContent = "";
-            videoContent = img[0];
+            videoContent = img.files[0];
           } else {
             messageType = "file";
             messageContent = "";
-            fileContent = img[0];
+            fileContent = img.files[0];
           }
         }
       }
@@ -265,7 +265,7 @@ export default function ChatWindow() {
         image: imageContent,
         video: videoContent,
         file: fileContent, // Gửi file cùng với tin nhắn
-        messageId: "123",
+        messageId: Math.random().toString(36).substr(2, 9),
       });
       // const deletedMessages = new Set(JSON.parse(localStorage.getItem('deletedMessages') || '[]'));
       // setMessages(currentMessages => [...currentMessages, {...newMessage, isDeleted: deletedMessages.has(newMessage.messageId)}]);
@@ -335,7 +335,7 @@ export default function ChatWindow() {
     // Tạo tin nhắn mới với định dạng mong muốn
     const newMessage = {
       content: {
-        text: original.message ? original.message : "Đang tải tin nhắn...", // Dùng message nếu có, nếu không thì thông báo thu hồi
+        text: original.message ? original.message : "", // Dùng message nếu có, nếu không thì thông báo thu hồi
         files: files,
       },
       createdAt: original.createdAt || new Date().toISOString(), // Nếu không có createdAt, dùng thời gian hiện tại
