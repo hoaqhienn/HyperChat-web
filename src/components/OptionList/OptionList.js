@@ -1,11 +1,17 @@
-import React from 'react'
-import { Col, Row } from 'antd'
+import React, { useEffect } from 'react'
+import { Col, Row, notification } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 
 import Tool from '../Home/Tool'
 import SideBarOptionList from './SideBarOptionList'
 import ListWindow from './ListWindow'
+import { socket } from '../../socket/socket'
 const OptionList = () => {
+  useEffect(() => {
+    socket.on('receiveFriendRequest', (data) => {
+      notification.success({ message: 'New Friend Request', description: 'You have received a new friend request.' });
+    });
+  }, []);
   return (
     <Row>
       <Col span={1}><Tool /></Col>

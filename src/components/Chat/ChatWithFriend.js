@@ -25,6 +25,7 @@ const ChatWithFriend = () => {
   //   });
     
   // }, []);
+  
   return (
     <Row>
       <Col span={1}><Tool /></Col>

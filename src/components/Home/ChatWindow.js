@@ -79,6 +79,13 @@ export default function ChatWindow() {
     setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
+  // useEffect(() => {
+  //   socket.on('receiveNotification', (data) => {
+  //     const {senderId} = data;
+  //     notification.info({ message: `Bạn có tin nhắn mới từ ${senderId} ` });
+  //   });
+  // }, []);
+
   const toggleEmojiPicker = () => {
     setShowEmojiPicker(!showEmojiPicker);
   };
@@ -136,6 +143,7 @@ export default function ChatWindow() {
       </ul>
     </div>
   );
+  
 
   const handleRemoveGroup = async () => {
     const userId = localStorage.getItem("userId"); // Assuming you store userId in localStorage
@@ -164,7 +172,7 @@ export default function ChatWindow() {
     const adminId = localStorage.getItem("userId");
     const token = localStorage.getItem("userToken");
     const chatGroupId = roomInfo._id; // Ensure this is correctly retrieved and exists
-
+    socket.emit('deleteGroup', { roomId: roomInfo._id , name: roomInfo.name });
     console.log("Attempting to dissolve group:", token, adminId, chatGroupId);
 
     if (!token || !adminId || !chatGroupId) {
@@ -356,6 +364,10 @@ export default function ChatWindow() {
   // Giả sử messageData có dạng như sau, bạn cần điều chỉnh theo dữ liệu thực tế
 
   useEffect(() => {
+      socket.on('receiveNotification', (data) => {
+        console.log("dat-------a", data);
+        notification.success({ message: `Bạn có tin nhắn mới` });
+      });
     socket.on("receiveMessage", (message) => {
       const getChatData = async (chatId) => {
         try {
@@ -372,12 +384,65 @@ export default function ChatWindow() {
           );
         }
       };
+      
       getChatData(roomInfo._id);
       let a = transformMessage(message);
       console.log("a-----------------------------------------", a);
       setMessages([...rommData, a]);
       console.log("messages", messages);
     });
+    // socket.on('receiveMessageNotification', (data) => {
+    //   const {senderId, text} = data;
+    //   const getChatData = async (chatId) => {
+    //     try {
+    //       const response = await axios.get(
+    //         `${getAllMessagesByChatId}${chatId}`
+    //       );
+    //       rommData = response.data;
+    //     } catch (error) {
+    //       console.error(
+    //         "Error fetching messages for chat ID",
+    //         chatId,
+    //         ":",
+    //         error
+    //       );
+    //     }
+    //   };
+    //   // let a = {
+    //   //   _id: Math.random().toString(36).substr(2, 9),
+    //   //   text,
+    //   //   createdAt: new Date().toISOString(),
+    //   //   user: {
+    //   //     _id: senderId,
+    //   //     avatar: users.find(user => user._id === senderId).avatar
+    //   //   },
+    //   //   image: "",
+    //   //   video: "",
+    //   //   file: "",
+    //   //   notification: true
+    //   // };
+
+    //   let obj = {
+    //     _id: Math.random().toString(36).substr(2, 9), // ID của đối tượng, có thể tạo ngẫu nhiên nếu cần
+    //     sender: Math.random().toString(36).substr(2, 9), // ID của người gửi, có thể thay đổi tùy theo cấu trúc dữ liệu
+    //     content: {
+    //       text: text, // Thay thế bằng nội dung thực tế
+    //       files: [], // Thay thế bằng danh sách file đính kèm
+    //     },
+    //     chatGroup: roomInfo._id, // ID của nhóm chat, có thể thay đổi tùy theo cấu trúc dữ liệu
+    //     views: roomInfo.members, // Danh sách người nhận tin nhắn, có thể thay đổi tùy theo cấu trúc dữ liệu
+    //     notification: true,
+    //     createdAt: new Date().toISOString() , // Thời gian tạo tin nhắn, có thể thay đổi tùy theo cấu trúc dữ liệu
+    //     // updatedAt: new Date().toISOString(), // Thời gian cập nhật tin nhắn, có thể thay đổi tùy theo cấu trúc dữ liệu
+    //     __v: 0
+    //   };
+    //   console.log("obj", obj);
+    //   getChatData(roomInfo._id);
+    //   let b = transformMessage(obj);
+    //   console.log("a-----------------------------------------", b);
+    //   setMessages([...rommData, b]);
+    //   console.log("messages", messages);
+    // });
   }, [rommData]);
   //-------------------------------------------------------------------------------
   // Hàm xóa tin nhắn
@@ -566,6 +631,7 @@ export default function ChatWindow() {
   //
   const handleCheckboxChange = (e, itemId) => {
     if (e.target.checked) {
+      console.log("ID????",itemId);
       setmemberadd((prevmemberadd) => [...prevmemberadd, itemId]); // Thêm itemId vào memberadd nếu checkbox được chọn
     } else {
       setmemberadd((prevmemberadd) =>
@@ -579,10 +645,25 @@ export default function ChatWindow() {
   const addMember = async () => {
     const adminId = localStorage.getItem("userId"); // Get the current user's ID from localStorage
     const token = localStorage.getItem("userToken");
-
+    console.log("memberadd", memberadd);
+    console.log("roomInfo._id", roomInfo._id)
+    ;
+    socket.emit('addMemberChatGroup', { roomId: roomInfo._id, members: memberadd });
+    let list = '';
+      memberadd.forEach(member => {
+        const name = users.find(user => user._id === member).fullname;
+           list = list + name + ', ';
+      });
+    await notificationMessage(roomInfo._id, userId, `${list} đã được thêm vào nhóm`, token);
+    socket.emit('sendNotification',
+    { roomId: roomInfo._id,
+      senderId : userId ,
+      text: list + 'đã được thêm vào nhóm'
+    })
+    notification.success({ message: `${list} đã được thêm vào nhóm` });
     if (!adminId) {
       notification.error({ message: "Authentication error. Please log in." });
-      return; // Prevent the function from proceeding without a valid admin ID
+      return; // Prevent the function from proceeding without a valid admin IDs
     }
 
     try {
@@ -621,7 +702,13 @@ export default function ChatWindow() {
   const addAdmin = async () => {
     const adminId = localStorage.getItem("userId");
     const token = localStorage.getItem("userToken");
-
+    const us = users.find((item) => item._id === selectedMemberId);
+    socket.emit('sendNotification', { 
+      roomId: roomInfo._id,
+      senderId : userId + Math.floor(Math.random() * 1000000),
+      text: `${us.fullname} đã được bổ nhiệm làm trưởng nhóm`,
+  })
+  await notificationMessage(roomInfo._id, userId, `${us.fullname} đã được bổ nhiệm làm trưởng nhóm`, token);
     if (!selectedMemberId) {
       notification.error({ message: "No member selected." });
       return;
@@ -659,6 +746,13 @@ export default function ChatWindow() {
   const deletemember = async () => {
     const adminId = localStorage.getItem("userId");
     const token = localStorage.getItem("userToken");
+    socket.emit('deleteMemberChatGroup', { roomId: roomInfo._id, members: [selectedMemberId] });
+    const us = users.find((item) => item._id === selectedMemberId);
+    socket.emit('sendNotification', { 
+      roomId: roomInfo._id,
+      senderId : userId,
+      text: `${us.fullname} đã bị xoá khỏi nhóm`,
+  })
     console.log(
       "111111111111111111111111",
       adminId,
@@ -666,7 +760,7 @@ export default function ChatWindow() {
       selectedMemberId,
       token
     );
-
+await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá khỏi nhóm`, token);
     if (!token) {
       notification.error({
         message: "Authentication error. Please log in again.",
@@ -1408,6 +1502,14 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
       socket.off("retrievedMessageRecall", handleretRievedMessageRecall);
     };
   }, [messages]);
+
+  // useEffect(() => {
+  //   console.log('123123123123123');
+  //   socket.on('deleteChatGroupForMember', (roomId) => {
+  //       notification.success({ message: 'Bạn đã bị xóa khỏi nhóm' });
+  //       window.location.href = '/home';
+  //   });
+  // }, [socket]);
   return (
     <div
       className={`message-row ${isMyMessage ? "my-message" : "friend-message"}`}

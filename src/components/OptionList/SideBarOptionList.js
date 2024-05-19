@@ -135,6 +135,7 @@ export default function SideBarOptionList() {
       await axios.delete(unFriend, {
         data: { sender: sender, receiver: receiver }
       });
+      socket.emit('unFriend', {senderId: sender, receiverId: receiver});
       notification.success({ message: 'Đã Hủy Kết Bạn THành Công' });
       getListFriend();
     } catch (error) {
@@ -197,7 +198,7 @@ export default function SideBarOptionList() {
       {/* Phần danh sách bạn bè */}
       <div style={{ height:'100vh', overflowY:'scroll', overflowX:'visible', flexDirection:'column'}}>
         {/* Lời mời kết bạn */}
-        <div style={{ display:'flex', alignItems:'center', width:370, height:80, backgroundColor:'red'}}>
+        <div style={{ display:'flex', alignItems:'center', width:370, height:80,}}>
           <MailOutlined style={{ marginLeft:30, fontSize:30}}/>
           <p style={{ fontSize:20, marginLeft:10}}>Lời mời kết bạn</p>
         </div>

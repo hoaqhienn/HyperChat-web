@@ -38,7 +38,7 @@ const getAllFriends = async userId => {
     // Lặp qua danh sách ID để lấy thông tin của từng bạn bè
     for (let i = 0; i < listFriend.length; i++) {
       const res = await axios.get(
-        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}${listFriend[i]._id}`, // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
+        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}/${listFriend[i]._id}`, // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
       );
       List.push(res.data); // Thêm thông tin người dùng vào danh sách
     }

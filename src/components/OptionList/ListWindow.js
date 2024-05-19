@@ -3,22 +3,26 @@ import axios from 'axios';
 import { Avatar, List, notification ,Button} from 'antd';
 import {useSelector} from 'react-redux';
 import {getRequests, getData, acceptFriendRequest, deleteFriendRequest} from '../../api/allUser';
+import { socket } from '../../socket/socket';
 
 const ListWindow = () => {
+
   // Lấy danh sách người dùng và thông tin của người dùng hiện tại từ Redux store
   const users = useSelector(state => state.user.users);
   const me = useSelector(state => state.auth.user);
   
   // State hook để lưu trữ danh sách các yêu cầu kết bạn
   const [requests, setRequests] = useState([]);
- 
+
   // Effect hook để lấy danh sách yêu cầu kết bạn khi component được render
   const fetchRequests = async () => {
     try {
       // Gọi API để lấy danh sách yêu cầu kết bạn
       const res = await getRequests(me._id);
+      console.log('Requests:', res);
       // Cập nhật state với danh sách yêu cầu kết bạn
       setRequests(res);
+      console.log('Requests:', res);
     } catch (error) {
       console.error('Error caught:', error);
     }
@@ -32,6 +36,11 @@ const ListWindow = () => {
       const response = await axios.post(acceptFriendRequest, {
         sender: userId,
         receiver: me._id,
+      });
+
+      socket.emit('acceptFriendRequest', {
+        senderId: userId,
+        receiverId: me._id,
       });
       
       console.log('Friend request accepted:', response.data);

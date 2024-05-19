@@ -95,6 +95,10 @@ export default function SideBar() {
         sender: senderId,
         receiver: user._id
       });
+      socket.emit('sendFriendRequest', {
+        senderId: senderId,
+        receiverId: user._id,
+      });
       notification.success({ message: 'Lời mời kết bạn đã được gửi!' });
       setIsPopupOpen(false);
       setUser(null);
@@ -131,6 +135,7 @@ export default function SideBar() {
         members: memberGroup.concat(user1._id),
       });
       console.log('Thêm Thành Công:',response.data)
+      socket.emit('createGroup', {newGroup:response.data});
       setIsOpenAddGroup(false);
       setGroupName('');
       setMemberGroup([]);

@@ -79,7 +79,7 @@ export default function Tool() {
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-        const response = await axios.get(`${getUser}${userId}`, config); // Sử dụng _id trong yêu cầu
+        const response = await axios.get(`${getUser}/${userId}`, config); // Sử dụng _id trong yêu cầu
         setUserInfo(response.data);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
