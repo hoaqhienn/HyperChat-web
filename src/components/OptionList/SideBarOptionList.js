@@ -1,12 +1,12 @@
 import { SearchOutlined, MailOutlined } from '@ant-design/icons';
-import { AiOutlineUserAdd, AiOutlineUsergroupAdd } from "react-icons/ai";
+import { AiOutlineUserAdd, AiOutlineUserDelete, AiOutlineUsergroupAdd } from "react-icons/ai";
 import { Avatar, Input, Button, notification } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import '../css/Tool.css';
 import { PiUserListBold } from 'react-icons/pi';
-import { createChatPrivate, getAllFriends, getAllMessagesByChatId, info, listchats, sendFriendRequest } from '../../api/allUser';
+import { createChatPrivate, getAllFriends, getAllMessagesByChatId, info, listchats, sendFriendRequest, unFriend } from '../../api/allUser';
 import { useNavigate } from 'react-router-dom';
 import { saveChatInfo, saveChatItem } from '../../redux/chatSlice';
 
@@ -39,22 +39,7 @@ export default function SideBarOptionList() {
         notification.error({ message: 'Lỗi tìm kiếm người dùng.' });
       });
   }, [phoneNumber]);
-
-  // Effect hook để lấy danh sách bạn bè khi component được render
-  useEffect(() => {
-    const getListFriend = async () => {
-      try {
-        // Gọi API để lấy danh sách yêu cầu kết bạn
-        const res = await getAllFriends(me._id);
-        // Cập nhật state với danh sách yêu cầu kết bạn
-        setListFriend(res);
-        console.log(listFriend);
-      } catch (error) {
-        console.error('Error caught:', error);
-      }
-    };
-    getListFriend();
-  }, []);
+  useEffect(() => getListFriend,[]);
   // Effect hook để lấy danh sách chat khi component được render
   useEffect(() => {
     const fetchFriendsList = async () => {
@@ -125,8 +110,38 @@ export default function SideBarOptionList() {
       notification.error({ message: 'Không thể gửi lời mời kết bạn. Vui lòng thử lại.' });
     }
   };
-  // tạo chat private
-  
+  /* Đoạn này tôi tách cái hàm lấy danh sách bạn bè ra là một hàm riêng để sài được nhiều lần
+    Useeffect thì tôi sử dụng lại như thế xong tới hàm hủy kết bạn tui sau khi hủy kết bạn thành công
+    tui sử dụng lại hàm getListFriend để cho nó lấy lại danh sách bạn bè mới rồi useefect nó thấy thay đổi nó sẽ 
+    set lại rồi render lại danh sách mới 
+  */
+  // Effect hook để lấy danh sách bạn bè khi component được render
+  const getListFriend = async () => {
+    try {
+      // Gọi API để lấy danh sách yêu cầu kết bạn
+      const res = await getAllFriends(me._id);
+      // Cập nhật state với danh sách yêu cầu kết bạn
+      setListFriend(res);
+      console.log(listFriend);
+    } catch (error) {
+      console.error('Error caught:', error);
+    }
+  };
+  useEffect(() => getListFriend,[]);
+  // Hủy kết bạn
+  const deleteFriend = async (sender,receiver) => {
+    console.log(unFriend);
+    try {
+      await axios.delete(unFriend, {
+        data: { sender: sender, receiver: receiver }
+      });
+      notification.success({ message: 'Đã Hủy Kết Bạn THành Công' });
+      getListFriend();
+    } catch (error) {
+      console.error('Failed to send friend request:', error);
+      notification.error({ message: 'Hủy kết bạn thất bại' });
+    }
+  }
   return (
     <div style={{ width:'100%', height: '100vh', display:'flex', flexDirection:'column', borderRight:'1px solid #CCCCCC'}}>
       {/* Phần header */}
@@ -195,6 +210,8 @@ export default function SideBarOptionList() {
           <div
           key={item._id} 
           style={{ display: 'flex', alignItems: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}
+          >
+          <div style={{height:'100%',width:'25%',display:'flex',justifyContent:'center',alignItems:'center'}} 
           onClick={async () => {
             try {
                 const member = [];
@@ -214,8 +231,14 @@ export default function SideBarOptionList() {
                 console.log('Error:', error.response.data); // Log lỗi trả về từ máy chủ
             }
         }}>
-          <Avatar src={item.avatar} style={{width:60,height:60,marginLeft:30, fontSize:30}}/>
+            <Avatar src={item.avatar} style={{width:60,height:60,marginLeft:30, fontSize:30}}/>
+          </div>
+          <div style={{height:'100%',width:'60%',display:'flex',justifyContent:'center',alignItems:'center'}}>
           <p style={{ fontSize:20, marginLeft:10}}>{item.fullname}</p>
+          </div>
+          <div style={{height:'100%',width:'15%',display:'flex',justifyContent:'center',alignItems:'center'}}>
+          <AiOutlineUserDelete onClick={()=>deleteFriend(me._id,item._id)} style={{width:30,height:30}}/>
+          </div>
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-const SERVER_IP = '192.168.135.1'; //192.168.2.40
+const SERVER_IP = '192.168.1.6'; //192.168.2.40
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
 const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
@@ -42,7 +42,8 @@ const API_CONFIG = {
     createChatPrivate:'chat/createChatPrivate',
     changePassword:'user/changePassword',
     notificationMessage: 'message/notificationMessage',
-    forwardMessage:'message/forwadMessages'
+    forwardMessage:'message/forwadMessages',
+    unFriend:'friends/unFriend'
   },
 };
 
