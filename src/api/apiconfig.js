@@ -1,4 +1,4 @@
-const SERVER_IP = '192.168.217.1';
+const SERVER_IP = '192.168.135.1'; //192.168.2.40
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
 const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
@@ -29,7 +29,7 @@ const API_CONFIG = {
     deleteChatGroup:'chat/deleteChatGroup/',
     sendMessagetoServer:'message/sendMessage',
     getAllMessagesByChatId:'message/getAllMessagesByChatId/',
-    retrieveMessages:'message/retrieveMessages/',
+    retrieveMessages:'message/retrieveMessages',
     getAllChatGroupByUserId:'chat/getAllChatGroupByUserId/',
     addMembersToChatGroup:'chat/addMembersToChatGroup/',
     addAdminToChatGroup:'chat/addAdminToChatGroup/',
@@ -41,6 +41,8 @@ const API_CONFIG = {
     deleteFriendRequest:'friends/deleteFriendRequest',
     createChatPrivate:'chat/createChatPrivate',
     changePassword:'user/changePassword',
+    notificationMessage: 'message/notificationMessage',
+    forwardMessage:'message/forwadMessages'
   },
 };
 

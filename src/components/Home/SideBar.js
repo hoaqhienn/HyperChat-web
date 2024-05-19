@@ -30,7 +30,7 @@ export default function SideBar() {
   const [listGroup, setListGroup] = useState([]);
   const [refreshGroups, setRefreshGroups] = useState(false);
   const navigate = useNavigate();
-
+  const roomInfo2222eqweqw = useSelector((state) => state.chat.info);
 
   useEffect(() => {
     if (!phoneNumber) return;
@@ -291,6 +291,7 @@ export default function SideBar() {
               dispatch(saveChatInfo(friend));
               console.log("Room-info:", friend);
               getChatData(friend._id);
+              socket.emit('leaveAllRooms');
               socket.emit('joinRoom', friend._id, friend.members);
               navigate(`/chatwithfriend`, { state: { friendId: friend._id } })
             }}

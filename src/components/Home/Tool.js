@@ -46,7 +46,7 @@ export default function Tool() {
     const avatar = event.target.files[0]; // Lấy file từ sự kiện onChange
     try {
       const formData = new FormData(); // Tạo đối tượng FormData
-      formData.append("avatar", avatar); // Đưa file vào FormData với tên 'file'
+      formData.append("file", avatar); // Đưa file vào FormData với tên 'file'
 
       // Gửi yêu cầu POST đến máy chủ với FormData chứa hình ảnh
       const response = await axios.post(`${update}${userId}`, formData,
@@ -170,7 +170,7 @@ export default function Tool() {
   };
   return (
     <div className="tool-container">
-      <Avatar size={50} style={{ border: '2px solid white' }} src={userInfo.avatar || 'path_to_default_avatar.jpg'} onClick={() => setIsPopupOpen(true)} />
+      <Avatar size={50} style={{ border: '2px solid white' }} src={userInfo.avatar } onClick={() => setIsPopupOpen(true)} />
       <div className='wrapper' title='Chat' >
         <BiMessageSquareDetail className="icon" style={{ fontSize: 30 ,}} onClick={() => navigate('/home')} />
       </div>

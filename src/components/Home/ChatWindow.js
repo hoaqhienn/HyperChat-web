@@ -3,7 +3,7 @@ import {
   UsergroupAddOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { Avatar, notification } from "antd";
+import { Avatar, notification ,Modal} from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import API_CONFIG from "../../api/apiconfig";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,7 +25,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { getFriendSuccess } from "../../redux/friendSlice";
 import { saveChatItem } from "../../redux/chatSlice";
-import { deleteMessageAPI, retrieveMessages } from "../../api/apiMessager";
+import {
+  deleteMessageAPI,
+  retrieveMessages,
+  notificationMessage,
+} from "../../api/apiMessager";
 import EmojiPicker from "emoji-picker-react";
 import {
   addAdminToChatGroup,
@@ -38,6 +42,7 @@ import {
   getAllMessagesByChatId,
   outchatgroup,
   sendMessagetoServer,
+  forwardMessage,
 } from "../../api/allUser";
 import { CiEdit } from "react-icons/ci";
 import { FaRegBell } from "react-icons/fa";
@@ -48,6 +53,7 @@ export default function ChatWindow() {
   // console.log("roomInfo::", roomInfo);
   let rommData = useSelector((state) => state.chat.item);
   // console.log("rommData::", rommData);
+
   const users = useSelector((state) => state.user.users); // Lấy danh sách người dùng từ state của Redux
   const [listGroup, setlisGroup] = useState([]);
   const [listFriend, setListFriends] = useState([]);
@@ -238,8 +244,9 @@ export default function ChatWindow() {
 
       const img = await sendMessageToServer(newMessage, file);
       console.log("img", img.views);
+      console.log("img", img.files.length);
       if (img.views.includes(userId)) {
-        if (img.files[0].length > 0) {
+        if (img.views.includes(userId) && img.files && img.files[0]) {
           const fileExtension = getFileExtensionFromUrl(img.files[0]);
           console.log("fileExtension", fileExtension);
           if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
@@ -438,11 +445,16 @@ export default function ChatWindow() {
     });
   }, [rommData]);
   const handleRecallMessage = async (messageId) => {
-    const messageIndex = messages.findIndex(
-      (message) => message._id === messageId
-    );
+    try {
+      const messageIndex = messages.findIndex(
+        (message) => message._id === messageId
+      );
 
-    if (messageIndex !== -1) {
+      if (messageIndex === -1) {
+        console.log("Tin nhắn không tồn tại trong danh sách.");
+        return;
+      }
+
       // Add messageId to the set of recalled messages
       const recalledMessages = new Set(
         JSON.parse(localStorage.getItem("retrieveMessages") || "[]")
@@ -463,21 +475,31 @@ export default function ChatWindow() {
       notification.success({ message: "Tin nhắn đã được thu hồi." });
 
       // Make API call to recall the message
-      try {
-        const response = await axios.post(retrieveMessages(messageId));
-        console.log("Tin nhắn đã được thu hồi trên backend.", response.data);
-      } catch (error) {
-        console.error("Failed to recall message on the backend:", error);
-        notification.error({
-          message: "Error recalling message on the backend.",
-          description:
-            error.response?.data.message || "An unexpected error occurred.",
-        });
-      }
-    } else {
-      console.log("Tin nhắn không tồn tại trong danh sách.");
+      await retrieveMessages(messageId);
+      notification.success({ message: "Tin nhắn đã được thu hồi." });
+      const msck = messages.find((msg) => msg._id === messageId);
+      const ms = {
+        _id: messageId,
+        text: "Tin nhắn đã được thu hồi",
+        createdAt: msck.createdAt,
+        user: {
+          _id: msck.sender,
+          avatar: msck.avatar,
+        },
+        image: "",
+        video: "",
+        file: "",
+      };
+      socket.emit("retrieveMessages", { roomId: roomInfo._id, ms });
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      notification.error({
+        message: "An unexpected error occurred.",
+        description: error.message || "Please try again later.",
+      });
     }
   };
+
   useEffect(() => {
     // Load deleted messages from local storage
     const retrieveMessages = new Set(
@@ -871,16 +893,30 @@ export default function ChatWindow() {
             borderBottom: "1px solid #CCCCCC",
           }}
         >
-          {messages.map((message, index) => (
-            <Message
-              key={message._id}
-              message={message}
-              // isDeleted={deletedMessages.has(message._id)} // Pass this prop to determine if the message should be shown as deleted
-              friendAvatar={roomInfo.avatar}
-              onDelete={handleDeleteMessage}
-              onRecall={handleRecallMessage}
-            />
-          ))}
+          {messages.map((message, index) =>
+            message.notification ? (
+              <div
+                key={message._id}
+                style={{
+                  
+                  display: "flex",
+                  top: "50%",
+                 justifyContent: "center",
+                  border:"none",         
+                }}
+              >
+                <p>{message.content.text}</p>
+              </div>
+            ) : (
+              <Message
+                key={message._id}
+                message={message}
+                friendAvatar={roomInfo.avatar}
+                onDelete={handleDeleteMessage}
+                onRecall={handleRecallMessage}
+              />
+            )
+          )}
 
           <div ref={messagesEndRef} />
         </div>
@@ -1239,9 +1275,39 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
   const isMyMessage = message.sender === userId;
   const [showMenu, setShowMenu] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [isOpenForward, setIsOpenForward] = useState(false);
+  const [listChat, setListChat] = useState([]);
   const roomInfo = useSelector((state) => state.chat.info);
   let rommData = useSelector((state) => state.chat.item);
   const users = useSelector((state) => state.user.users);
+
+   // lấy danh sách bạn bè để chuyển tiếp (tại ông backend chỉ để ChatPrivateID)
+   const getListChat = async()=>{
+    try {
+      const res = await getAllFriends(userId);
+      setListChat(res);
+      // console.log(listChat);
+    } catch (error) {
+      console.error("Error caught:", error);
+    }
+  }
+  // chuyển tiếp tin nhắn
+  const sendforward = async (sender,chatPrivateId,messageId) => {
+    console.log(forwardMessage)
+    console.log(sender,chatPrivateId,messageId)
+    try {
+      const response = await axios.post(forwardMessage,{
+        sender: sender,
+        chatPrivateId:chatPrivateId,
+        messageId:messageId
+      });
+        notification.success({message:'Success'})
+        closeForward()
+      } catch (error) {
+        notification.error({ message: 'Failed to fetch. Please try again.' });
+      }
+  }
+  // console.log("tbtbtbtbbtbt", rommData);
   const handleMouseEnter = () => {
     setShowMenu(true);
   };
@@ -1252,7 +1318,17 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
   useEffect(() => {
     setMessages(rommData);
   }, [rommData]);
+  const openForward = () => {
+    console.log('open');
+    console.log(listChat)
+    setIsOpenForward(true);
+  };
 
+  const closeForward = () => {
+    console.log('close');
+    setIsOpenForward(false);
+  };
+  useEffect(()=>getListChat,[])
   const renderFileContent = (file, index) => {
     const fileExtension = file.split(".").pop().toLowerCase();
     if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
@@ -1416,9 +1492,57 @@ function Message({ message, friendAvatar, onDelete, onRecall }) {
                   border: "none",
                   borderRadius: "5px",
                 }}
+                onClick={openForward}
               >
                 Chuyển tiếp
               </button>
+              <Modal width="500px" centered={true} style={{ height: '300px' }} title="Chuyển Tiếp Tin Nhắn" visible={isOpenForward} onCancel={closeForward} footer={null}>
+              <div
+                  style={{
+                    display: "flex",
+                    height:300,
+                    width:450,
+                    flexDirection: "column",
+                    alignItems: "center",
+                    overflowY: "scroll",
+                  }}
+                >
+                  {
+                    listChat.map((item, index) => {
+                      return (
+                        <div
+                          key={item._id}
+                          style={{
+                            border: "2px solid black",
+                            display: "flex",
+                            alignItems: "center",
+                            marginBottom: 10,
+                            width: 400,
+                            height: 50,
+                            justifyContent: "space-between",
+                            borderRadius: 10,
+                            borderColor: "#76ABAE",
+                          }}
+                        >
+                          <div
+                            style={{ display: "flex",width:'100%',flexDirection:'row',alignItems: "center",justifyContent:'space-around' }}
+                          >
+                            <div style={{width:100,height:'100%',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                              <Avatar
+                                src={item.avatar}
+                                style={{ width: 40, height: 40 }}
+                              ></Avatar>
+                            </div>     
+                            <div style={{width:150,height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
+                              <p style={{marginLeft:5}}>{item.fullname}</p></div>                     
+                            {/*Chuyển TIếp Tin Nhắn*/}
+                            <button onClick={()=>sendforward(userId,item.chatPrivate.filter((id) => users.filter((user) => user._id == userId).shift().chatPrivate.includes(id)).shift(),message._id)}>Gửi</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </Modal>
               {message.sender === userId && (
                 <button
                   style={{

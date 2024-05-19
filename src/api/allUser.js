@@ -100,9 +100,10 @@ const sendOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPFor
 const verify = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPForgotPwd}`;
 const verifyOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.verifyOTPForgotPwd}`;
 const changePasswords = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.changePassword}`;
+const forwardMessage = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.forwardMessage}`;
 // Xuất các hàm để sử dụng ở bên ngoài module
 export {allUsers, getRequests,getAllFriends,login,outchatgroup,deleteChatGroup,sendMessagetoServer,
   getAllMessagesByChatId,getAllChatGroupByUserId,addMembersToChatGroup,addAdminToChatGroup,deleteMembersChatGroup,info,
   sendFriendRequest,listchats,createChatGroup,getUser,update,acceptFriendRequest,deleteFriendRequest,createChatPrivate,
-  register,sendOTPForgotPwd,verify,verifyOTPForgotPwd,changePasswords
+  register,sendOTPForgotPwd,verify,verifyOTPForgotPwd,changePasswords,forwardMessage
 };

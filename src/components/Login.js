@@ -15,8 +15,8 @@ const Login = () => {
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
 
-    const [account, setAccount] = useState('0942694947');
-    const [password, setPassword] = useState('Thinhnguyen2002@');
+    const [account, setAccount] = useState('Thinh@admin123');
+    const [password, setPassword] = useState('Thinh@admin123');
     const [passwordShown, setPasswordShown] = useState(false);
 
     const [error, setError] = useState(''); // State to store the error message
