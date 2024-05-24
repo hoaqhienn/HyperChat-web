@@ -1,4 +1,4 @@
-const SERVER_IP = '192.168.2.40'; //192.168.2.40
+const SERVER_IP = '192.168.2.15'; //192.168.2.40
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
 const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
