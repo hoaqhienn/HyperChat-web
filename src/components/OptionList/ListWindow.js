@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Avatar, List, notification ,Button} from 'antd';
-import {useSelector} from 'react-redux';
-import {getRequests, getData, acceptFriendRequest, deleteFriendRequest} from '../../api/allUser';
+import {useDispatch, useSelector} from 'react-redux';
+import {getRequests, getData, acceptFriendRequest, deleteFriendRequest, getAllFriends} from '../../api/allUser';
 import { socket } from '../../socket/socket';
 
-const ListWindow = () => {
 
+const ListWindow = () => {
+  const dispatch = useDispatch();
+  const [listFriend, setListFriend] = useState([]);
   // Lấy danh sách người dùng và thông tin của người dùng hiện tại từ Redux store
   const users = useSelector(state => state.user.users);
   const me = useSelector(state => state.auth.user);
@@ -28,7 +30,18 @@ const ListWindow = () => {
     }
   };
   useEffect(()=>{fetchRequests()},[]);
-  
+  const getListFriend = async () => {
+    try {
+      // Gọi API để lấy danh sách yêu cầu kết bạn
+      const res = await getAllFriends(me._id);
+      // Cập nhật state với danh sách yêu cầu kết bạn
+      setListFriend(res);
+      console.log(listFriend);
+    } catch (error) {
+      console.error('Error caught:', error);
+    }
+  };
+  useEffect(() => getListFriend,[]);
   // Xử lý chấp nhận yêu cầu kết bạn
   const handleAccept = async (userId) => {
     try {
@@ -53,7 +66,7 @@ const ListWindow = () => {
       // Cập nhật danh sách yêu cầu sau khi chấp nhận
       const updatedRequests = requests.filter(request => request._id !== userId);
       setRequests(updatedRequests);
-
+      getListFriend();
     } catch (error) {
       console.error('Failed to accept friend request:', error);
       // Hiển thị thông báo lỗi

@@ -30,7 +30,7 @@ export default function SideBar() {
   const [listGroup, setListGroup] = useState([]);
   const [refreshGroups, setRefreshGroups] = useState(false);
   const navigate = useNavigate();
-  const roomInfo2222eqweqw = useSelector((state) => state.chat.info);
+  const roomInfo = useSelector((state) => state.chat.info);
 
   useEffect(() => {
     if (!phoneNumber) return;
@@ -44,18 +44,16 @@ export default function SideBar() {
       });
   }, [phoneNumber]);
   // Lấy Danh Sách Bạn bè
-  useEffect(() => {
-    const getListFriend = async () => {
-      try {
-        const res = await getAllFriends(user1._id);
-        setListFriends(res);
-        console.log(listFriend);
-      } catch (error) {
-        console.error('Error caught:', error);
-      }
-    };
-    getListFriend();
-  }, []);
+  const getListFriend = async () => {
+    try {
+      const res = await getAllFriends(user1._id);
+      setListFriends(res);
+      console.log(listFriend);
+    } catch (error) {
+      console.error('Error caught:', error);
+    }
+  };
+  useEffect(() => getListFriend, []);
   //lấy danh sách Nhóm 
   useEffect(() => {
     const getListGroup = async () => {
@@ -107,25 +105,21 @@ export default function SideBar() {
       notification.error({ message: 'Không thể gửi lời mời kết bạn. Vui lòng thử lại.' });
     }
   };
-
-  useEffect(() => {
-    const fetchFriendsList = async () => {
-      try {
-        const token = localStorage.getItem('userToken');
-        const userId = localStorage.getItem('userId');
-        const response = await axios.get(`${listchats}${userId}`, {
-        });
-        setFriendsList(response.data);
-        dispatch(getFriendSuccess(response.data));
-      } catch (error) {
-        console.error('Error fetching friends list:', error);
-        console.log(listchats)
-        notification.error({ message: 'Failed to fetch. Please try again.' });
-      }
-    };
-
-    fetchFriendsList();
-  }, []);
+  const fetchFriendsList = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const userId = localStorage.getItem('userId');
+      const response = await axios.get(`${listchats}${userId}`, {
+      });
+      setFriendsList(response.data);
+      dispatch(getFriendSuccess(response.data));
+    } catch (error) {
+      console.error('Error fetching friends list:', error);
+      console.log(listchats)
+      notification.error({ message: 'Failed to fetch. Please try again.' });
+    }
+  };
+  useEffect(() => fetchFriendsList, []);
   // Tạo Danh sách chat group
   const createGroup = async () =>{
     try {
@@ -141,7 +135,7 @@ export default function SideBar() {
       setMemberGroup([]);
       setRefreshGroups(prev => !prev); // Toggle để kích hoạt useEffect
       notification.success({ message: 'Group created successfully!' });
-      window.location.reload();
+      fetchFriendsList();
     } catch (error) {
       console.error('Lỗi', error);
       notification.error({ message: 'Failed to fetch friends list. Please try again.' });
@@ -199,8 +193,10 @@ export default function SideBar() {
                 />
                 {user && (
                   <div style={{ border: 1, borderColor: '#76ABAE', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{display:'flex',padding:10,flex:1,gap:10}}> <div> <Avatar src={user.avatar} style={{width: 45, height:45}}></Avatar></div>
                     <div> <p style={{ fontWeight: 'bold', fontSize: 15 }}>{user.userName}</p>
-                      <p>{user.phoneNumber}</p></div>
+                      <p>{user.phoneNumber}</p></div></div>
+                   
                     <div> <button style={{ width: 100, height: 30, backgroundColor: 'white', borderColor: '#76ABAE', borderWidth: '3px' }} onClick={handleSendFriendRequest}>Kết bạn</button></div>
                   </div>
                 )}
@@ -242,8 +238,8 @@ export default function SideBar() {
                 })} 
                 </div>
                 <div style={{display:'flex',justifyContent:'space-around',width:'100%'}}>
-                  <button style={{width:150}} onClick={() => setIsOpenAddGroup(false)}>Đóng</button>
-                  {showCreateGroupButton && <button style={{ width: 150 }} onClick={createGroup}>Tạo Group</button>}
+                  <button style={{height:25,width:150,backgroundColor:'#76ABAE',color:'white',borderRadius:7,border:'none'}} onClick={() => setIsOpenAddGroup(false)}>Đóng</button>
+                  {showCreateGroupButton && <button style={{height:25,width:150,backgroundColor:'#76ABAE',color:'white',borderRadius:7,border:'none'}} onClick={createGroup}>Tạo Group</button>}
                 </div>
               </div>
             </div>
@@ -283,7 +279,7 @@ export default function SideBar() {
       </div> */}
       <div style={{maxHeight: 'calc(50vh - 122px)',borderBottom:'1px solid',display: 'flex',alignItems:'center',justifyContent: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}>
         <p style={{fontSize: '15px', marginBottom: '5px', fontWeight: '600' }}>
-        Chat private</p> 
+        Chat</p> 
       </div>
       <div style={{ overflowY: 'scroll', flexDirection: 'column', width: '100%' }}>
         {friendsList.map((friend) => {
@@ -293,6 +289,7 @@ export default function SideBar() {
             key={friend._id}
             style={{display: 'flex', alignItems: 'center', width: '373px', height: '80px', padding: '10px 0', backgroundColor: '#EEEEEE', width: '100%' }}
             onClick={() => {
+              console.log(friend)
               dispatch(saveChatInfo(friend));
               console.log("Room-info:", friend);
               getChatData(friend._id);

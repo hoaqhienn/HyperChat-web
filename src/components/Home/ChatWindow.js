@@ -655,6 +655,7 @@ export default function ChatWindow() {
            list = list + name + ', ';
       });
     await notificationMessage(roomInfo._id, userId, `${list} đã được thêm vào nhóm`, token);
+    window.location.reload();
     socket.emit('sendNotification',
     { roomId: roomInfo._id,
       senderId : userId ,
@@ -709,6 +710,7 @@ export default function ChatWindow() {
       text: `${us.fullname} đã được bổ nhiệm làm trưởng nhóm`,
   })
   await notificationMessage(roomInfo._id, userId, `${us.fullname} đã được bổ nhiệm làm trưởng nhóm`, token);
+  window.location.reload();
     if (!selectedMemberId) {
       notification.error({ message: "No member selected." });
       return;
@@ -856,7 +858,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
               <p style={{ color: "green", fontWeight: "bold" }}>Active</p>
             </div>
           </div>
-          <SearchOutlined className="search-icon" />
+          {/* <SearchOutlined className="search-icon" /> */}
 
           {roomInfo.members && roomInfo.members.length > 2 && (
             <AiOutlineUsergroupAdd
@@ -940,7 +942,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
                   }}
                 >
                   <button
-                    style={{ width: 150 }}
+                    style={{ width: 150,backgroundColor:'#76ABAE',border:'1px',borderRadius:5,padding:'5px',color:'white' }}
                     onClick={() => {
                       setIsOpenAddGroup(false);
                       setmemberadd([]);
@@ -949,7 +951,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
                     Đóng
                   </button>
                   {showCreateGroupButton && (
-                    <button style={{ width: 150 }} onClick={addMember}>
+                    <button style={{ width: 150,backgroundColor:'#76ABAE',border:'1px',borderRadius:5,padding:'5px',color:'white'  }} onClick={addMember}>
                       Thêm Thành Viên
                     </button>
                   )}
@@ -958,7 +960,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
             </div>
           )}
 
-          <FiVideo className="search-icon" />
+          {/* <FiVideo className="search-icon" /> */}
           <div style={{ position: "relative" }}>
             {roomInfo.members && roomInfo.members.length > 2 && (
               <>
@@ -1024,7 +1026,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
               alignItems: "center",
             }}
           >
-            <LuSticker className="search-icon" />
+            {/* <LuSticker className="search-icon" /> */}
             <div style={{ position: "relative" }}>
               <LuSmile className="search-icon" onClick={toggleEmojiPicker} />
               {showEmojiPicker && (
@@ -1045,7 +1047,7 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
               />
               <LuImage className="search-icon"></LuImage>
             </label>
-            <LuFile className="search-icon" />
+            {/* <LuFile className="search-icon" /> */}
           </div>
           <div
             style={{
@@ -1238,13 +1240,14 @@ await notificationMessage(roomInfo._id, userId, `${us.fullname} đã bị xoá k
                                 member === roomInfo.admin.toString()
                                   ? "yellow"
                                   : "white",
-                              border: "2px solid black",
+                              border: "2px #76ABAE solid",
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
                               marginBottom: 10,
                               width: 450,
                               height: 50,
+                              borderRadius: 10,
                             }}
                           >
                             <div>
