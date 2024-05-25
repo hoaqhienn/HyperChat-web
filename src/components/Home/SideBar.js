@@ -239,7 +239,7 @@ export default function SideBar() {
                 </div>
                 <div style={{display:'flex',justifyContent:'space-around',width:'100%'}}>
                   <button style={{height:25,width:150,backgroundColor:'#76ABAE',color:'white',borderRadius:7,border:'none'}} onClick={() => setIsOpenAddGroup(false)}>Đóng</button>
-                  {showCreateGroupButton && <button style={{ width: 150 }} onClick={createGroup}>Tạo Group</button>}
+                  {showCreateGroupButton && <button style={{height:25,width:150,backgroundColor:'#76ABAE',color:'white',borderRadius:7,border:'none'}} onClick={createGroup}>Tạo Group</button>}
                 </div>
               </div>
             </div>
