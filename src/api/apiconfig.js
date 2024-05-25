@@ -3,11 +3,11 @@ const SERVER_IP = 'app.vietkieumytho.xyz'; //192.168.2.40
 
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
-const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
+const API_BASE_URL = `app.vietkieumytho.xyz/api/`;
 
 //const SOCKET_URL = `http://localhost:${SOCKET_PORT}`;
 // const SOCKET_URL = `http://3.107.1.0:3000`;
-const SOCKET_URL = `http://${SERVER_IP}:3000`;
+const SOCKET_URL = `https://${SERVER_IP}`;
 const API_CONFIG = {
   baseURL: API_BASE_URL,
   socket: SOCKET_URL,
