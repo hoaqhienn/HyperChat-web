@@ -15,8 +15,8 @@ const Login = () => {
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
 
-    const [account, setAccount] = useState('0942694947');
-    const [password, setPassword] = useState('Thinhnguyen2002@');
+    const [account, setAccount] = useState();
+    const [password, setPassword] = useState();
     const [passwordShown, setPasswordShown] = useState(false);
 
     const [error, setError] = useState(''); // State to store the error message
@@ -103,6 +103,9 @@ const Login = () => {
                             </div>
                             <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex', marginTop: 10 }} >
                                 <a onClick={() => navigate('/forgotpassword')} style={{ color: 'black', fontWeight: 'inherit', color: '#76ABAE' }} href=''>Quên mật khẩu?</a>
+                            </div>
+                            <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex', marginTop: 10 }} >
+                                <a onClick={() => navigate('/register')} style={{ color: 'black', fontWeight: 'inherit', color: '#76ABAE' }} href=''>Đăng ký</a>
                             </div>
                         </div>
                     </div>

@@ -38,7 +38,13 @@ const getAllFriends = async userId => {
     // Lặp qua danh sách ID để lấy thông tin của từng bạn bè
     for (let i = 0; i < listFriend.length; i++) {
       const res = await axios.get(
-        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}/${listFriend[i]._id}`, // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
+        `${API_CONFIG.baseURL}${API_CONFIG.endpoints.getUser}/${listFriend[i]._id}`,
+         // Gửi yêu cầu GET đến API để lấy thông tin của người dùng dựa trên ID
+        //  {
+        //   headers: {
+        //     "Authorization": token,
+        //   },
+        // }
       );
       List.push(res.data); // Thêm thông tin người dùng vào danh sách
     }
@@ -97,7 +103,7 @@ const deleteFriendRequest = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.deleteF
 const createChatPrivate = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.createChatPrivate}`;
 const register = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.register}`;
 const sendOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPForgotPwd}`;
-const verify = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.sendOTPForgotPwd}`;
+const verify = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.verifyOTP}`;
 const verifyOTPForgotPwd = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.verifyOTPForgotPwd}`;
 const changePasswords = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.changePassword}`;
 const forwardMessage = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.forwardMessage}`;

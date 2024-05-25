@@ -1,4 +1,4 @@
-const SERVER_IP = '192.168.2.40'; //192.168.2.40
+const SERVER_IP = '192.168.2.53'; //192.168.2.40
 const SERVER_PORT = '5000';
 const SOCKET_PORT = '3000';
 const API_BASE_URL = `http://localhost:${SERVER_PORT}/api/`;
@@ -20,6 +20,7 @@ const API_CONFIG = {
     update: 'user/update',
     listchats: 'user/getListChats/',
     sendOTPForgotPwd: 'user/sendOTPForgotPassword',
+    verifyOTP:'user/register/verifyOTP',
     verifyOTPForgotPwd: 'user/verifyOTPForgotPassword',
     changePassword: 'user/changePassword',
     getRequests: 'friends/getAllSendFriendRequest',

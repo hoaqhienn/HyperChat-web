@@ -1,4 +1,3 @@
-// authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState =  {
@@ -16,9 +15,13 @@ const saveChat = createSlice({
     saveChatItem: (state, action) => {
       state.item = action.payload;
     },
+    updateChatInfo: (state, action) => {
+      // Assuming action.payload is an object containing updated information
+      state.info = { ...state.info, ...action.payload };
+    },
   },
 });
 
-export const { saveChatInfo, saveChatItem } = saveChat.actions;
+export const { saveChatInfo, saveChatItem, updateChatInfo } = saveChat.actions;
 
 export default saveChat.reducer;

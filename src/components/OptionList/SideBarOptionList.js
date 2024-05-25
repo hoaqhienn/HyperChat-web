@@ -187,7 +187,7 @@ export default function SideBarOptionList() {
                 )}
                 {/* Nút đóng popup */}
                 <div>
-                  <button style={{}} onClick={() => setIsPopupOpen(false)}>Đóng</button>
+                  <button style={{height:25,width:150,backgroundColor:'#76ABAE',color:'white',borderRadius:7,border:'none'}} onClick={() => setIsPopupOpen(false)}>Đóng</button>
                 </div>
               </div>
             </div>
