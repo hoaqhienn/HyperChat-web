@@ -7,7 +7,7 @@ const API_BASE_URL = `https://app.vietkieumytho.xyz/api/`;
 
 //const SOCKET_URL = `http://localhost:${SOCKET_PORT}`;
 // const SOCKET_URL = `http://3.107.1.0:3000`;
-const SOCKET_URL = `https://app.vietkieumytho.xyz/api`;
+const SOCKET_URL = `https://app.vietkieumytho.xyz/api/`;
 const API_CONFIG = {
   baseURL: API_BASE_URL,
   socket: SOCKET_URL,
